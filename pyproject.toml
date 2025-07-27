@@ -1,0 +1,23 @@
+[project]
+name = "warp_queries"
+version = "0.1.0"
+description = "Reusable SQL & DuckDB query library for Warp Terminal analytics"
+authors = [
+    { name = "Warp Session Suite" }
+]
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "typer[all]>=0.9",
+    "duckdb>=1.1.3",
+    "rich>=13.7"
+]
+keywords = ["warp", "duckdb", "sql", "cli"]
+
+[project.scripts]
+warps = "warp_queries.cli:app"
+
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+

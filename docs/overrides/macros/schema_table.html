@@ -1,0 +1,32 @@
+{# macros/schema_table.html }
+{% macro render_table(table) %}
+<table>
+  <thead>
+    <tr>
+      <th>Column</th>
+      <th>Type</th>
+      <th>Constraints</th>
+      <th>Foreign Key</th>
+      <th>Used By</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for col in table.columns %}
+    <tr>
+      <td>{{ col.name }}</td>
+      <td>{{ col.type or '' }}</td>
+      <td>{{ ', '.join(col.constraints) if col.constraints else '' }}</td>
+      <td>{% if col.foreign_key %}{{ col.foreign_key }}{% endif %}</td>
+      <td>
+        {% if used_by_map and col.name in used_by_map %}
+          {% for link in used_by_map[col.name] %}
+            <a href="{{ link.href }}">{{ link.label }}</a>{% if not loop.last %}, {% endif %}
+          {% endfor %}
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endmacro %}
+

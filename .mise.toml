@@ -1,0 +1,239 @@
+
+# ---- Warp database backup & restore ----
+[tasks."schema:vacuum"]
+description = "Zero-downtime sqlite backup (timestamped & gzipped)"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Location of the live Warp sqlite database
+WARP_DB="$HOME/Library/Application Support/dev.warp.Warp-Stable/warp.sqlite"
+
+if [[ ! -f "$WARP_DB" ]]; then
+  echo "❌ Warp database not found at: $WARP_DB"
+  exit 1
+fi
+
+BACKUP_DIR="$HOME/.warp/backups"
+mkdir -p "$BACKUP_DIR"
+
+TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
+BACKUP_PATH="$BACKUP_DIR/warp_${TIMESTAMP}.sqlite"
+
+echo "📀 Creating consistent backup via sqlite3 .backup …"
+# The .backup command ensures a consistent snapshot while the DB is live (zero-downtime)
+sqlite3 "$WARP_DB" ".backup '$BACKUP_PATH'"
+
+# Compress the resulting sqlite file
+gzip "$BACKUP_PATH"
+
+echo "✅ Backup written to ${BACKUP_PATH}.gz"
+'''
+
+[tasks."schema:restore"]
+description = "Restore Warp sqlite from a previous backup (.sqlite or .gz)"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -ne 1 ]]; then
+  echo "Usage: mise run schema:restore <backup_file>"
+  exit 1
+fi
+RESTORE_SRC="$1"
+
+if [[ ! -f "$RESTORE_SRC" ]]; then
+  echo "❌ Backup file not found: $RESTORE_SRC"
+  exit 1
+fi
+
+WARP_DB="$HOME/Library/Application Support/dev.warp.Warp-Stable/warp.sqlite"
+WARP_DIR="$(dirname \"$WARP_DB\")"
+mkdir -p "$WARP_DIR"
+
+TMP_RESTORE=""
+# If gzipped, stream-decompress to a temp file to avoid touching the archive
+if [[ "$RESTORE_SRC" == *.gz ]]; then
+  TMP_RESTORE="$(mktemp -t warp_restore_XXXX.sqlite)"
+  gunzip -c "$RESTORE_SRC" > "$TMP_RESTORE"
+  RESTORE_SRC="$TMP_RESTORE"
+fi
+
+if [[ ! -f "$WARP_DB" ]]; then
+  echo "ℹ️ No existing Warp DB detected—performing fresh restore."
+else
+  echo "📦 Backing up current DB before restore …"
+  cp "$WARP_DB" "${WARP_DB}.pre-restore.$(date +%Y-%m-%d_%H-%M-%S)"
+fi
+
+# Use atomic move to minimise downtime
+cp "$RESTORE_SRC" "${WARP_DB}.restoring"
+mv "${WARP_DB}.restoring" "$WARP_DB"
+
+[[ -n "$TMP_RESTORE" && -f "$TMP_RESTORE" ]] && rm "$TMP_RESTORE"
+
+echo "✅ Restore complete → $WARP_DB"
+'''
+
+[tasks."backup:daily"]
+description = "Scheduled daily backup of Warp DB"
+schedule = "daily"
+run = "mise run schema:vacuum"
+
+[tasks."schema:extract"]
+description = "Extract Warp database schema to JSON and YAML formats"
+run = '''
+#!/bin/bash
+set -euo pipefail
+
+# Configuration
+WARP_DB="$HOME/Library/Application Support/dev.warp.Warp-Stable/warp.sqlite"
+OUTPUT_DIR="docs/schema/raw"
+
+echo "🔄 Extracting Warp database schema..."
+
+# Create output directory if it doesn't exist
+mkdir -p "$OUTPUT_DIR"
+
+# Check if Warp database exists
+if [[ ! -f "$WARP_DB" ]]; then
+    echo "❌ Warp database not found at: $WARP_DB"
+    echo "💡 Make sure Warp Terminal is installed and has been used"
+    exit 1
+fi
+
+# Use system Python to ensure sqlite-utils is available
+# First try system python, then fall back to mise python
+if command -v /usr/bin/python3 &> /dev/null && /usr/bin/python3 -c "import sqlite_utils" &> /dev/null; then
+    PYTHON="/usr/bin/python3"
+elif python3 -c "import sqlite_utils" &> /dev/null; then
+    PYTHON="python3"
+else
+    echo "❌ sqlite-utils not found in any Python environment"
+    echo "📝 Please install sqlite-utils with one of:"
+    echo "   /usr/bin/python3 -m pip install --user sqlite-utils"
+    echo "   python3 -m pip install --user sqlite-utils"
+    exit 1
+fi
+
+echo "🐍 Using Python: $PYTHON"
+
+# Final availability check for sqlite-utils Python module
+if ! command -v sqlite-utils >/dev/null 2>&1 && ! $PYTHON -c "import sqlite_utils" >/dev/null 2>&1; then
+  echo "❌ Unable to locate sqlite-utils CLI or module after attempted installation."
+  echo "   Please ensure Homebrew or pipx is installed and rerun this task."
+  exit 1
+fi
+
+# Ensure yq exists (install via brew if missing)
+if ! command -v yq >/dev/null 2>&1; then
+  if command -v brew >/dev/null 2>&1; then
+    echo "📦 Installing yq via Homebrew..."
+    brew install yq || true
+  fi
+fi
+
+# Proceed with extraction logic
+
+# Use sqlite-utils CLI if present, else fall back to python -m sqlite_utils
+    echo "❌ sqlite-utils not found. Please install with:"
+    echo "   $PYTHON -m pip install --user sqlite-utils"
+    exit 1
+fi
+
+# Extract schema in SQL format
+echo "📄 Extracting SQL schema..."
+$PYTHON -m sqlite_utils schema "$WARP_DB" > "$OUTPUT_DIR/schema.sql"
+
+# Extract tables with schema and columns in JSONL format
+echo "📊 Extracting table metadata..."
+$PYTHON -m sqlite_utils tables "$WARP_DB" --schema --columns --nl > "$OUTPUT_DIR/tables.jsonl"
+
+# Convert JSONL to proper JSON format
+echo "🔄 Converting to JSON..."
+$PYTHON "$OUTPUT_DIR/convert_schema.py"
+
+# Convert JSON to YAML using yq
+echo "📝 Converting to YAML..."
+if command -v yq &> /dev/null; then
+    cat "$OUTPUT_DIR/schema.json" | yq eval -P > "$OUTPUT_DIR/schema.yaml"
+else
+    echo "⚠️  yq not found, skipping YAML conversion"
+    echo "   Install yq with: brew install yq"
+fi
+
+echo "✅ Schema extraction complete!"
+echo "📁 Files generated in $OUTPUT_DIR:"
+echo "   - schema.sql (SQL DDL)"
+echo "   - schema.json (Structured JSON)"
+echo "   - schema.yaml (YAML format)"
+echo "   - tables.jsonl (Raw JSONL from sqlite-utils)"
+echo ""
+echo "💡 To re-run after Warp updates: mise run schema:extract"
+'''
+
+[tasks."docs:serve"]
+description = "Live-reload local documentation site"
+run = "mkdocs serve --livereload"
+
+# ---- Warp Session interactive pickers ----
+[tasks."ws-commands"]
+description = "Fuzzy search Warp command history (fzf/glow)"
+run = "scripts/ws-commands"
+
+[tasks."ws-blocks"]
+description = "Navigate Warp panes/blocks via fzf"
+run = "scripts/ws-blocks"
+
+[tasks."ws-ai"]
+description = "Browse AI conversations from Warp via fzf"
+run = "scripts/ws-ai"
+
+[projects.scripts]
+
+[tasks."schema:validate"]
+description = "Validate extracted schema files"
+run = '''
+#!/bin/bash
+set -euo pipefail
+
+OUTPUT_DIR="docs/schema/raw"
+
+echo "🔍 Validating schema files..."
+
+# Check if files exist
+for file in schema.sql schema.json schema.yaml; do
+    if [[ -f "$OUTPUT_DIR/$file" ]]; then
+        echo "✅ $file exists"
+    else
+        echo "❌ $file missing"
+        exit 1
+    fi
+done
+
+# Validate JSON
+if command -v jq &> /dev/null; then
+    if jq empty "$OUTPUT_DIR/schema.json" 2>/dev/null; then
+        echo "✅ schema.json is valid JSON"
+    else
+        echo "❌ schema.json is invalid JSON"
+        exit 1
+    fi
+else
+    echo "⚠️  jq not found, skipping JSON validation"
+fi
+
+# Validate YAML
+if command -v yq &> /dev/null; then
+    if yq eval . "$OUTPUT_DIR/schema.yaml" > /dev/null 2>&1; then
+        echo "✅ schema.yaml is valid YAML"
+    else
+        echo "❌ schema.yaml is invalid YAML"
+        exit 1
+    fi
+else
+    echo "⚠️  yq not found, skipping YAML validation"
+fi
+
+echo "✅ All schema files are valid!"
+'''

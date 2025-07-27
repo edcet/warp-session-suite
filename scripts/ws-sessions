@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# ws-sessions: Quick-open sessions from the last 24 hours.
+# Depends on warps CLI, jq, fzf, glow, tmuxp
+
+set -euo pipefail
+
+# Fetch last 24h sessions as base64 encoded lines for fzf
+warps preview last_24h_sessions --limit 5000 --format json |
+  jq -R -s -c 'split("\n")[:-1] | map(fromjson) | .[] | @base64' |
+  fzf --ansi \
+      --header="[Warp] Select a session to restore — ENTER loads layout via tmuxp" \
+      --preview 'echo {} | base64 --decode | jq -r "to_entries | map("\(.key): \(.value)") | join("\n")" | glow -' \
+      --bind 'enter:execute(echo {} | base64 --decode | jq -r .session_id | xargs -I{} sh -c "warps export-session {} | tmuxp load -")+abort'
+

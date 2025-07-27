@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Interactive fuzzy finder for AI conversation transcripts.
+# Requires warps CLI, jq, fzf, glow
+
+set -euo pipefail
+
+warps preview ai_convo_summary --limit 1000 --format json |
+  jq -R -s -c 'split("\n")[:-1] | map(fromjson) | .[] | @base64' |
+  fzf --ansi \
+      --header="[Warp] Browse AI conversations — ENTER copies full transcript" \
+      --preview 'echo {} | base64 --decode | jq -r .transcript | glow -' \
+      --bind 'enter:execute-silent(echo {} | base64 --decode | jq -r .transcript | pbcopy)+abort'
+

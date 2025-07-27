@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Interactive fuzzy finder for Warp command history.
+# Requires: warps CLI, jq, fzf, glow
+
+set -euo pipefail
+
+# Pull full history as JSONL, then encode each record for safe transport
+warps preview last_commands --limit 10000 --format json |
+  jq -R -s -c 'split("\n")[:-1] | map(fromjson) | .[] | @base64' |
+  fzf --ansi \
+      --header="[Warp] Search command history — ENTER to copy command to clipboard" \
+      --preview 'echo {} | base64 --decode | jq -r "to_entries | map("\(.key): \(.value)") | join("\n")" | glow -' \
+      --bind 'enter:execute-silent(echo {} | base64 --decode | jq -r .command | pbcopy)+abort'
+

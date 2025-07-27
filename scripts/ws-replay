@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# ws-replay: Stream command/output pairs from a past Warp session to stdout.
+# Usage: ws-replay <session-id>
+# Depends on warps CLI, jq
+
+set -euo pipefail
+
+if [[ ${#} -ne 1 ]]; then
+  echo "Usage: $(basename "$0") <session-id>" >&2
+  exit 1
+fi
+
+session_id="$1"
+
+# Export the session as JSON and stream command/output pairs.
+# The JSON schema is assumed to have panes[].blocks[] items where
+# a command block contains `command_text` and its subsequent output block
+# contains `output_text`. Adjust selectors if schema differs.
+
+warps export-session "${session_id}" --format json | \
+  jq -r '
+    # Collect blocks per pane preserving order
+    .panes[] | .blocks | 
+    # Iterate with an index to pair command with its immediate output
+    to_entries | sort_by(.key) | .[] | {idx: .key, blk: .value} | .blk as $b |
+    select($b.type == "command") | 
+      $b.command_text as $cmd | 
+      (.idx+1) as $next | 
+      .parent[$next] as $outBlk | 
+      "\u001b[1;32m$ ▶ \u001b[0m" + $cmd + "\n" + ( $outBlk.output_text // "" ) + "\n"' | \
+  while IFS= read -r line; do
+    printf "%s\n" "$line"
+    sleep 0.05  # small delay for playback effect
+  done
+

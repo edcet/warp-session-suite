@@ -1,0 +1,36 @@
+site_name: Warp Session Suite Documentation
+site_url: https://example.com
+
+# Directory that contains our Markdown files
+# (defaults to "docs", but we keep it explicit)
+docs_dir: docs
+
+theme:
+  name: material
+  features:
+    # Enable some commonly-used Material features
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.highlight
+    - search.share
+
+markdown_extensions:
+  - admonition
+  - footnotes
+  - pymdownx.tabbed
+  - pymdownx.superfences
+  - pymdownx.details
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+  - macros: {}
+
+nav:
+  - Home: index.md
+  - Environment Guide: environment.md
+  - Database Schema:
+      - Overview: schema_overview.md
+
