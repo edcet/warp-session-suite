@@ -72,38 +72,46 @@ def main() -> None:
     # ------------------------------------------------------------------
     # ERD: SVG and PNG
     # ------------------------------------------------------------------
-    run([
-        "schemadiagram",
-        "erd",
-        str(SCHEMA_JSON),
-        str(SVG_OUT),
-        "--format",
-        "svg",
-    ], "generate SVG ERD")
+    run(
+        [
+            "schemadiagram",
+            "erd",
+            str(SCHEMA_JSON),
+            str(SVG_OUT),
+            "--format",
+            "svg",
+        ],
+        "generate SVG ERD",
+    )
 
-    run([
-        "schemadiagram",
-        "erd",
-        str(SCHEMA_JSON),
-        str(PNG_OUT),
-        "--format",
-        "png",
-    ], "generate PNG ERD")
+    run(
+        [
+            "schemadiagram",
+            "erd",
+            str(SCHEMA_JSON),
+            str(PNG_OUT),
+            "--format",
+            "png",
+        ],
+        "generate PNG ERD",
+    )
 
     # ------------------------------------------------------------------
     # Mermaid
     # ------------------------------------------------------------------
-    run([
-        "schemadiagram",
-        "mermaid",
-        str(SCHEMA_JSON),
-        "--output",
-        str(MERMAID_OUT),
-    ], "generate Mermaid markdown")
+    run(
+        [
+            "schemadiagram",
+            "mermaid",
+            str(SCHEMA_JSON),
+            "--output",
+            str(MERMAID_OUT),
+        ],
+        "generate Mermaid markdown",
+    )
 
     print("\n🎉 All diagrams generated successfully in docs/schema/img/")
 
 
 if __name__ == "__main__":
     main()
-

@@ -1,8 +1,9 @@
 """Fixed SQL snippets that work with actual Warp Terminal schema."""
 
+
 class WarpSQL:
     """Collection of working SQL snippets against Warp's real SQLite schema.
-    
+
     These queries work with the actual Warp database structure as of 2024.
     """
 
@@ -187,5 +188,8 @@ class WarpSQL:
     @classmethod
     def list_queries(cls) -> list[str]:
         """Return list of available SQL snippet names."""
-        return [k for k in cls.__dict__.keys() 
-                if not k.startswith("__") and k != "list_queries" and isinstance(getattr(cls, k), str)]
+        return [
+            k
+            for k in cls.__dict__.keys()
+            if not k.startswith("__") and k != "list_queries" and isinstance(getattr(cls, k), str)
+        ]

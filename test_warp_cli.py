@@ -9,6 +9,7 @@ from typing import Optional
 
 try:
     import pandas as pd
+
     HAS_PANDAS = True
 except ImportError:
     HAS_PANDAS = False
@@ -16,10 +17,11 @@ except ImportError:
 # Known Warp database locations (in order of preference)
 WARP_DB_PATHS = [
     "~/Library/Application Support/dev.warp.Warp-Stable/warp.sqlite",
-    "~/Library/Application Support/dev.warp.Warp/warp.sqlite", 
+    "~/Library/Application Support/dev.warp.Warp/warp.sqlite",
     "~/Library/Application Support/dev.warp.Warp/stores/main.sqlite",
     "~/Library/Application Support/Warp/warp.sqlite",
 ]
+
 
 def find_warp_database() -> Path:
     """Find the Warp SQLite database on the system."""
@@ -27,34 +29,35 @@ def find_warp_database() -> Path:
         path = Path(path_str).expanduser().resolve()
         if path.exists():
             return path
-    
+
     # For testing in container, use test database
     test_db = Path("test_data/warp_test.sqlite")
     if test_db.exists():
         return test_db
-    
+
     raise FileNotFoundError(
-        f"Could not find Warp database. Searched paths:\n" +
-        "\n".join(f"  - {p}" for p in WARP_DB_PATHS) +
-        f"\n\nMake sure Warp Terminal is installed and has been used."
+        f"Could not find Warp database. Searched paths:\n"
+        + "\n".join(f"  - {p}" for p in WARP_DB_PATHS)
+        + f"\n\nMake sure Warp Terminal is installed and has been used."
     )
+
 
 class WarpDB:
     """Direct SQLite connection to Warp's database."""
-    
+
     def __init__(self, db_path: Optional[str] = None):
         if db_path:
             self.db_path = Path(db_path).expanduser().resolve()
         else:
             self.db_path = find_warp_database()
-            
+
         if not self.db_path.exists():
             raise FileNotFoundError(f"Warp database not found at {self.db_path}")
-        
+
         # Open read-only connection to avoid locking issues
         self.conn = sqlite3.connect(f"file:{self.db_path}?mode=ro", uri=True)
         self.conn.row_factory = sqlite3.Row  # Allow dict-like access
-    
+
     def query(self, sql: str, params: tuple = ()):
         """Execute SQL query and return results."""
         try:
@@ -69,14 +72,17 @@ class WarpDB:
             print(f"SQL Error: {e}")
             print(f"Query: {sql}")
             raise
-    
+
     def list_tables(self) -> list[str]:
         """List all tables in the database."""
-        cursor = self.conn.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")
+        cursor = self.conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
+        )
         return [row[0] for row in cursor.fetchall()]
-    
+
     def close(self):
         self.conn.close()
+
 
 # SQL Queries for Warp
 class WarpSQL:
@@ -97,7 +103,7 @@ class WarpSQL:
         ORDER BY c.start_ts DESC
         LIMIT 20;
     """
-    
+
     ai_conversations = """
         SELECT
             aq.id,
@@ -111,7 +117,7 @@ class WarpSQL:
         ORDER BY aq.start_ts DESC
         LIMIT 10;
     """
-    
+
     project_analysis = """
         SELECT
             c.pwd as project_path,
@@ -128,11 +134,12 @@ class WarpSQL:
         LIMIT 10;
     """
 
+
 def print_results(results, title: str):
     """Print query results in a readable format."""
     print(f"\n=== {title} ===")
-    
-    if HAS_PANDAS and hasattr(results, 'empty'):
+
+    if HAS_PANDAS and hasattr(results, "empty"):
         if results.empty:
             print("No results found")
             return
@@ -149,39 +156,41 @@ def print_results(results, title: str):
     else:
         print(results)
 
+
 def main():
     """Main CLI function."""
     print("🚀 Warp Session Recovery Tool")
-    
+
     try:
         db = WarpDB()
         print(f"📊 Connected to database: {db.db_path}")
-        
+
         # List tables
         tables = db.list_tables()
         print(f"\n📋 Found {len(tables)} tables:")
         for table in sorted(tables):
             print(f"  - {table}")
-        
+
         # Test queries
         if "commands" in tables:
             results = db.query(WarpSQL.recent_commands)
             print_results(results, "Recent Commands")
-        
+
         if "ai_queries" in tables:
             results = db.query(WarpSQL.ai_conversations)
             print_results(results, "AI Conversations")
-        
+
         if "commands" in tables:
             results = db.query(WarpSQL.project_analysis)
             print_results(results, "Project Analysis")
-        
+
         db.close()
         print("\n✅ Test completed successfully!")
-        
+
     except Exception as e:
         print(f"❌ Error: {e}")
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main() or 0)

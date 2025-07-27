@@ -7,4 +7,3 @@ except PackageNotFoundError:
 
 from .sql_snippets import SQL
 from .db import DuckDBConnector
-

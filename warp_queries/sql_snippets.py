@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+
 class SQL:
     """Collection of pre-defined SQL snippets against Warp's SQLite schema.
 
@@ -12,8 +13,7 @@ class SQL:
     """
 
     # Last executed commands including timestamp and directory
-    last_commands = (
-        """
+    last_commands = """
         SELECT
             p.command_text         AS command,
             s.start_time           AS started_at,
@@ -26,11 +26,9 @@ class SQL:
         ORDER BY s.start_time DESC
         LIMIT 100;
         """
-    )
 
     # AI conversation summary (assumes messages table)
-    ai_convo_summary = (
-        """
+    ai_convo_summary = """
         SELECT
             conversation_id,
             GROUP_CONCAT(content, '\n') AS transcript,
@@ -41,11 +39,9 @@ class SQL:
         ORDER BY ended_at DESC
         LIMIT 50;
         """
-    )
 
     # Pane genealogy: relationship of panes to windows and tabs
-    pane_genealogy = (
-        """
+    pane_genealogy = """
         SELECT
             p.id               AS pane_id,
             t.id               AS tab_id,
@@ -60,11 +56,9 @@ class SQL:
         JOIN windows w ON w.id = t.window_id
         ORDER BY pane_created DESC;
         """
-    )
 
     # Sessions started within the last 24 hours with basic metadata
-    last_24h_sessions = (
-        """
+    last_24h_sessions = """
         SELECT
             s.id                AS session_id,
             w.title             AS window_title,
@@ -78,10 +72,8 @@ class SQL:
         GROUP BY s.id, w.title
         ORDER BY started_at DESC;
         """
-    )
 
     @classmethod
     def list_queries(cls) -> list[str]:
         """Return list of available SQL snippet names."""
         return [k for k in cls.__dict__.keys() if not k.startswith("__") and k != "list_queries"]
-
