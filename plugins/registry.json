@@ -47,6 +47,12 @@
       "version": "1.0.0",
       "entry": "plugins/analytics/src/main.py",
       "capabilities": ["performance_monitoring", "usage_analytics", "predictive_analysis", "system_optimization"]
+    },
+    "code_quality": {
+      "name": "Code Quality & Standards Management",
+      "version": "1.0.0",
+      "entry": "plugins/code_quality/src/main.py",
+      "capabilities": ["trunk_integration", "lefthook_management", "formatting", "linting", "parsing", "git_hooks"]
     }
   }
 }

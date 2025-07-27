@@ -1,0 +1,32 @@
+# Lefthook configuration for Unified Terminal Automation System
+pre-commit:
+  parallel: true
+  commands:
+    trunk-check:
+      glob: "*.{py,js,ts,yaml,yml,json,md,sh}"
+      run: trunk fmt {staged_files} && trunk check {staged_files}
+    plugin-tests:
+      glob: "plugins/**/*.py"
+      run: python3 {staged_files} test
+    security-scan:
+      run: trunk check --filter=bandit,gitleaks,trufflehog
+      
+pre-push:
+  parallel: true
+  commands:
+    full-quality-check:
+      run: trunk check --all
+    plugin-validation:
+      run: python3 unified_cli.py system status
+    advanced-automation-test:
+      run: python3 advanced_automation.py
+      
+commit-msg:
+  commands:
+    conventional-commits:
+      run: |
+        if ! grep -qE "^(feat|fix|docs|style|refactor|test|chore|ci|perf|build|revert)(\(.+\))?: .+" "$1"; then
+          echo "❌ Commit message must follow conventional commit format"
+          echo "Examples: feat: add new feature, fix: resolve bug, docs: update readme"
+          exit 1
+        fi

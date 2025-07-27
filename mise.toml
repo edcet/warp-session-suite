@@ -55,6 +55,12 @@ shfmt = "3.8.0"
 jq = "1.7.1"
 yq = "4.44.1"
 
+# Code Quality & Linting Tools
+trunk = { git = "https://github.com/trunk-io/trunk.git", ref = "main" }
+lefthook = "1.7.12"
+prettier = "3.3.3"
+eslint = "8.57.0"
+
 #===============================================================================
 # GLOBAL ENVIRONMENT - XDG Compliant & Performance Optimized
 #===============================================================================
