@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Warp Session Recovery Tool
-A working tool that actually understands Warp's database schema and unique features.
+Warp Session Recovery Tool - Unified Terminal Automation System Integration
+Enhanced for modular plugin architecture and GitOps workflow.
 """
 
 import json

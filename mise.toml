@@ -1,0 +1,844 @@
+#===============================================================================
+# UNIFIED MODULAR TERMINAL AUTOMATION SYSTEM
+# Version: 6.0.0 (Warp-Session-Suite Integration)
+# GitOps-Driven, AI-Augmented, Multi-Tool Orchestration Platform
+#===============================================================================
+
+[settings]
+experimental = true
+jobs = 0  # Auto-detect CPU cores
+verbose = false
+legacy_version_file = true
+asdf_compat = true
+yes = true
+always_keep_download = false
+always_keep_install = false
+
+#===============================================================================
+# UNIVERSAL TOOLCHAIN - Version Pinned for Reproducibility
+#===============================================================================
+[tools]
+# Core Languages & Runtimes
+node = "22.2.0"
+python = "3.12.4"
+rust = "1.78.0"
+go = "1.22.3"
+bun = "1.1.10"
+
+# Python Ecosystem (UV-first)
+uv = "0.2.7"
+pdm = "2.15.1"
+ruff = "0.4.5"
+poetry = "1.8.2"
+
+# AI & Terminal Multiplexer
+tgpt = { git = "https://github.com/aandrew-me/tgpt.git", ref = "main" }
+zellij = "0.40.1"
+
+# Essential CLI Utilities (Rust-first)
+fzf = "0.52.1"
+bat = "0.24.0"
+eza = "0.18.15"
+fd = "10.1.0"
+ripgrep = "14.1.0"
+delta = "0.17.0"
+zoxide = "0.9.4"
+gum = "0.14.1"
+glow = "1.5.1"
+gh = "2.50.0"
+starship = "1.18.2"
+btop = "1.3.2"
+lazygit = "0.42.0"
+k9s = "0.32.4"
+shellcheck = "0.10.0"
+shfmt = "3.8.0"
+jq = "1.7.1"
+yq = "4.44.1"
+
+#===============================================================================
+# GLOBAL ENVIRONMENT - XDG Compliant & Performance Optimized
+#===============================================================================
+[env]
+# XDG Base Directory Specification
+XDG_CONFIG_HOME = "${HOME}/.config"
+XDG_DATA_HOME = "${HOME}/.local/share"
+XDG_CACHE_HOME = "${HOME}/.cache"
+XDG_STATE_HOME = "${HOME}/.local/state"
+
+# Core System Environment
+LANG = "en_US.UTF-8"
+LC_ALL = "en_US.UTF-8"
+TERM = "xterm-256color"
+COLORTERM = "truecolor"
+EDITOR = "hx"
+VISUAL = "${EDITOR}"
+PAGER = "less -R"
+SHELL = "/bin/zsh"
+
+# Terminal Automation System Paths
+UNIFIED_AUTOMATION_HOME = "${PWD}"
+WARP_SESSION_SUITE_HOME = "${PWD}"
+PLUGIN_DIR = "${PWD}/plugins"
+CONFIG_REPO_PATH = "${PWD}"
+
+# Python Environment (UV-optimized)
+PYTHONDONTWRITEBYTECODE = "1"
+PYTHONUNBUFFERED = "1"
+PYTHONDEVMODE = "1"
+UV_CACHE_DIR = "${XDG_CACHE_HOME}/uv"
+UV_NATIVE_DEPS = "1"
+PDM_CACHE_DIR = "${XDG_CACHE_HOME}/pdm"
+PDM_VENV_IN_PROJECT = "true"
+RUFF_CACHE_DIR = "${XDG_CACHE_HOME}/ruff"
+
+# Rust Environment
+CARGO_HOME = "${HOME}/.cargo"
+RUSTUP_HOME = "${HOME}/.rustup"
+RUST_BACKTRACE = "1"
+CARGO_TERM_COLOR = "always"
+
+# AI Integration
+TGPT_CONFIG_HOME = "${XDG_CONFIG_HOME}/tgpt"
+UNIFIED_AI_CACHE = "${XDG_CACHE_HOME}/unified_ai"
+
+# FZF Configuration
+FZF_DEFAULT_COMMAND = "fd --type f --hidden --follow --exclude .git --exclude node_modules --exclude target --exclude .venv"
+FZF_DEFAULT_OPTS = "--height 60% --layout=reverse --border --ansi --cycle --bind 'ctrl-/:toggle-preview' --color=dark --prompt=' ' --pointer='➤' --marker='✓'"
+FZF_PREVIEW_FILE_CMD = "bat --color=always --style=numbers,changes --line-range :200 {}"
+
+# Performance Optimizations
+NUMBER_OF_PROCESSORS = "$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)"
+MAKEFLAGS = "-j${NUMBER_OF_PROCESSORS}"
+
+#===============================================================================
+# UNIFIED TERMINAL AUTOMATION TASKS
+#===============================================================================
+[tasks]
+
+#-------------------------------------------------------------------------------
+# System Bootstrap & GitOps Management
+#-------------------------------------------------------------------------------
+[tasks."system:bootstrap"]
+description = "Complete system bootstrap: tools, plugins, dotfiles, and GitOps setup"
+aliases = ["bootstrap", "init"]
+run = """#!/usr/bin/env bash
+set -euo pipefail
+
+echo "🚀 Bootstrapping Unified Terminal Automation System"
+
+# Install all mise-managed tools
+echo "📦 Installing mise tools..."
+mise install --all
+
+# Initialize plugin system
+echo "🔌 Initializing plugin architecture..."
+mkdir -p plugins/{warp,cursor,windsurf,pearai,trae}/src
+mkdir -p plugins/core/{session,token,state}
+mkdir -p plugins/ai/{tgpt,openai,anthropic}
+
+# Create plugin registry
+cat > plugins/registry.json << 'EOF'
+{
+  "plugins": {
+    "warp": {
+      "name": "Warp Terminal Integration",
+      "version": "1.0.0",
+      "entry": "plugins/warp/src/main.py",
+      "capabilities": ["session_recovery", "database_access", "ai_integration"]
+    },
+    "cursor": {
+      "name": "Cursor AI Editor Integration", 
+      "version": "1.0.0",
+      "entry": "plugins/cursor/src/main.py",
+      "capabilities": ["token_management", "auth_bypass", "session_persistence"]
+    },
+    "windsurf": {
+      "name": "Windsurf Integration",
+      "version": "1.0.0", 
+      "entry": "plugins/windsurf/src/main.py",
+      "capabilities": ["context_routing", "command_enhancement"]
+    },
+    "core": {
+      "name": "Core Session Management",
+      "version": "1.0.0",
+      "entry": "plugins/core/session/manager.py",
+      "capabilities": ["unified_session", "cross_tool_state", "backup_restore"]
+    },
+    "ai": {
+      "name": "AI Integration Hub",
+      "version": "1.0.0",
+      "entry": "plugins/ai/tgpt/integration.py", 
+      "capabilities": ["code_generation", "analysis", "automation"]
+    }
+  }
+}
+EOF
+
+echo "✅ System bootstrap complete!"
+echo "Next: Run 'mise run plugin:create-warp' to migrate existing Warp functionality"
+"""
+
+[tasks."gitops:sync"]
+description = "GitOps configuration synchronization"
+aliases = ["sync", "cfg:sync"]
+run = """#!/usr/bin/env bash
+set -euo pipefail
+
+if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    echo "⚠️ Not in a Git repository. Initializing..."
+    git init -b main
+    git add .
+    git commit -m "feat: Initialize Unified Terminal Automation System"
+fi
+
+echo "🔄 Syncing GitOps configuration..."
+
+# Stage all configuration changes
+git add mise.toml plugins/ warp_session_recovery.py warp_queries/
+
+# Check for changes
+if ! git diff --quiet --cached; then
+    TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S")
+    git commit -m "feat(gitops): Configuration sync - $TIMESTAMP"
+    echo "✅ Configuration committed locally"
+    
+    if command -v gum &>/dev/null; then
+        if gum confirm "Push changes to remote?"; then
+            git push || echo "⚠️ Push failed - resolve manually"
+        fi
+    else
+        echo "📤 Ready to push: git push"
+    fi
+else
+    echo "✅ Configuration already up-to-date"
+fi
+"""
+
+#-------------------------------------------------------------------------------
+# Plugin System Management
+#-------------------------------------------------------------------------------
+[tasks."plugin:create-warp"]
+description = "Create Warp plugin with existing session recovery functionality"
+run = """#!/usr/bin/env bash
+set -euo pipefail
+
+echo "🔌 Creating Warp plugin from existing functionality..."
+
+# Create plugin structure
+mkdir -p plugins/warp/{src,config,tests}
+
+# Create main Warp plugin
+cat > plugins/warp/src/main.py << 'EOF'
+#!/usr/bin/env python3
+"""
+Warp Terminal Plugin for Unified Terminal Automation System
+Migrated and enhanced from existing warp_session_recovery.py
+"""
+
+import json
+import os
+import sqlite3
+import sys
+from pathlib import Path
+from typing import Optional, Dict, List, Any
+from datetime import datetime
+
+class WarpPlugin:
+    """Warp Terminal integration plugin with enhanced session recovery."""
+    
+    def __init__(self, config: Dict[str, Any] = None):
+        self.name = "warp"
+        self.version = "1.0.0"
+        self.config = config or {}
+        self.db_path = self._find_warp_database()
+        
+    def _find_warp_database(self) -> Path:
+        """Find Warp's SQLite database with enhanced security."""
+        paths = [
+            "~/Library/Application Support/dev.warp.Warp-Stable/warp.sqlite",
+            "~/Library/Application Support/dev.warp.Warp/warp.sqlite",
+            "~/Library/Application Support/dev.warp.Warp/stores/main.sqlite",
+            "~/Library/Application Support/Warp/warp.sqlite",
+        ]
+        
+        for path_str in paths:
+            path = Path(path_str).expanduser().resolve()
+            if path.exists():
+                # Security validation
+                if '..' in str(path):
+                    raise ValueError("Path traversal detected in Warp database path")
+                return path
+        
+        # Fallback to test database
+        test_db = Path("test_data/warp_test.sqlite")
+        if test_db.exists():
+            return test_db
+            
+        raise FileNotFoundError("Warp database not found")
+    
+    def initialize(self) -> bool:
+        """Initialize Warp plugin."""
+        try:
+            self.conn = sqlite3.connect(f"file:{self.db_path}?mode=ro", uri=True)
+            self.conn.row_factory = sqlite3.Row
+            return True
+        except Exception as e:
+            print(f"Failed to initialize Warp plugin: {e}")
+            return False
+    
+    def get_session_state(self, hours: int = 24) -> Dict[str, Any]:
+        """Extract comprehensive session state with security hardening."""
+        return self._get_session_data_secure(hours)
+    
+    def _get_session_data_secure(self, hours: int) -> Dict[str, Any]:
+        """Secure session data extraction using parameterized queries."""
+        # Recent commands with full context (SECURITY: Parameterized query)
+        commands = self._execute_query("""
+            SELECT 
+                c.id, c.command, c.pwd as working_directory,
+                c.git_branch, c.exit_code,
+                datetime(c.start_ts) as started_at,
+                datetime(c.completed_ts) as completed_at,
+                c.shell, c.username, c.hostname, c.session_id
+            FROM commands c 
+            WHERE c.start_ts > datetime('now', ? || ' hours')
+            ORDER BY c.start_ts DESC
+        """, (f"-{hours}",))
+        
+        # AI conversations (SECURITY: Parameterized query)
+        ai_conversations = self._execute_query("""
+            SELECT 
+                aq.id, aq.exchange_id, aq.conversation_id,
+                datetime(aq.start_ts) as started_at,
+                aq.input, aq.working_directory, aq.model_id,
+                aq.output_status, ab.output as ai_response
+            FROM ai_queries aq
+            LEFT JOIN ai_blocks ab ON ab.exchange_id = aq.exchange_id
+            WHERE aq.start_ts > datetime('now', ? || ' hours')
+            ORDER BY aq.start_ts DESC
+        """, (f"-{hours}",))
+        
+        return {
+            'plugin': 'warp',
+            'version': self.version,
+            'extraction_time': datetime.now().isoformat(),
+            'database_path': str(self.db_path),
+            'time_range_hours': hours,
+            'commands': commands,
+            'ai_conversations': ai_conversations,
+            'stats': {
+                'total_commands': len(commands),
+                'total_ai_conversations': len(ai_conversations)
+            }
+        }
+    
+    def _execute_query(self, sql: str, params: tuple = ()) -> List[Dict]:
+        """Execute query with security hardening."""
+        cursor = self.conn.execute(sql, params)
+        columns = [desc[0] for desc in cursor.description]
+        return [dict(zip(columns, row)) for row in cursor.fetchall()]
+    
+    def create_recovery_script(self, session_data: Dict, output_name: str = "warp_recovery.sh") -> str:
+        """Generate recovery script with secure file handling."""
+        # SECURITY: Secure file path to prevent path traversal
+        safe_output = os.path.join(os.getcwd(), os.path.basename(output_name))
+        
+        script_lines = [
+            "#!/bin/bash",
+            "# Warp Session Recovery Script (Generated by Unified Automation System)",
+            f"# Generated: {session_data.get('extraction_time', 'unknown')}",
+            "",
+            "echo '🚀 Warp session recovery via Unified Terminal Automation System'",
+            ""
+        ]
+        
+        # Add recent commands context
+        for cmd in session_data.get('commands', [])[:10]:
+            if cmd.get('working_directory'):
+                script_lines.append(f"# {cmd['started_at']} in {cmd['working_directory']}")
+            script_lines.append(f"# {cmd['command']}")
+            if cmd.get('exit_code', 0) != 0:
+                script_lines.append(f"# ❌ Exit code: {cmd['exit_code']}")
+            script_lines.append("")
+        
+        with open(safe_output, 'w') as f:
+            f.write('\n'.join(script_lines))
+        
+        Path(safe_output).chmod(0o755)
+        return safe_output
+
+# Plugin factory function
+def create_plugin(config: Dict[str, Any] = None) -> WarpPlugin:
+    return WarpPlugin(config)
+EOF
+
+echo "✅ Warp plugin created successfully!"
+echo "📍 Location: plugins/warp/"
+echo "🔧 Next: Run 'mise run plugin:test-warp' to test the plugin"
+"""
+
+[tasks."plugin:test-warp"]
+description = "Test the Warp plugin functionality"
+run = """#!/usr/bin/env python3
+import sys
+sys.path.append('plugins')
+
+try:
+    from warp.src.main import create_plugin
+    
+    print("🧪 Testing Warp plugin...")
+
+    # Create and initialize plugin
+    warp_plugin = create_plugin()
+    
+    if warp_plugin.initialize():
+        print("✅ Plugin initialized successfully")
+        
+        # Test session extraction
+        session_data = warp_plugin.get_session_state(hours=24)
+        print(f"📊 Extracted {session_data['stats']['total_commands']} commands")
+        print(f"📊 Extracted {session_data['stats']['total_ai_conversations']} AI conversations")
+        
+        # Test recovery script generation
+        script_path = warp_plugin.create_recovery_script(session_data, "test_recovery.sh")
+        print(f"📝 Recovery script created: {script_path}")
+        
+        print("✅ All Warp plugin tests passed!")
+    else:
+        print("❌ Plugin initialization failed")
+        sys.exit(1)
+        
+except Exception as e:
+    print(f"❌ Plugin test failed: {e}")
+    import traceback
+    traceback.print_exc()
+    sys.exit(1)
+"""
+
+#-------------------------------------------------------------------------------
+# AI-Powered Automation (TGPT Integration)
+#-------------------------------------------------------------------------------
+[tasks."ai:generate-plugin"]
+description = "Use TGPT to generate a new tool plugin interactively"
+run = """#!/usr/bin/env bash
+set -euo pipefail
+
+if ! command -v tgpt &>/dev/null; then
+    echo "❌ TGPT not found. Install via 'mise use -g tgpt'"
+    exit 1
+fi
+
+echo "🤖 AI-Powered Plugin Generator"
+
+# Interactive plugin specification
+if command -v gum &>/dev/null; then
+    TOOL_NAME=$(gum input --placeholder "Tool name (e.g., cursor, windsurf, pearai)")
+    TOOL_DESC=$(gum input --placeholder "Tool description (e.g., 'AI code editor with token management')")
+    CAPABILITIES=$(gum input --placeholder "Capabilities (comma-separated, e.g., 'auth_bypass,session_persistence,ai_integration')")
+else
+    echo -n "Tool name: "; read TOOL_NAME
+    echo -n "Tool description: "; read TOOL_DESC
+    echo -n "Capabilities: "; read CAPABILITIES
+fi
+
+echo "🧠 Generating plugin with TGPT..."
+
+PLUGIN_PROMPT="Generate a Python plugin for the tool '$TOOL_NAME' which is '$TOOL_DESC'. 
+The plugin should:
+1. Follow the same pattern as the Warp plugin
+2. Implement initialize(), get_session_state(), and create_recovery_script() methods
+3. Handle these capabilities: $CAPABILITIES
+4. Include secure database/file operations with parameterized queries
+5. Include proper error handling and logging
+
+Generate the complete plugin code for plugins/$TOOL_NAME/src/main.py"
+
+GENERATED_PLUGIN=$(tgpt --code "$PLUGIN_PROMPT")
+
+# Create plugin structure
+mkdir -p "plugins/$TOOL_NAME"/{src,config,tests}
+
+# Extract and save the generated code
+echo "$GENERATED_PLUGIN" | sed '/^```python/,/^```/!d; /^```/d' > "plugins/$TOOL_NAME/src/main.py"
+
+# Create plugin config
+cat > "plugins/$TOOL_NAME/config/settings.json" << EOF
+{
+  "name": "$TOOL_NAME",
+  "description": "$TOOL_DESC", 
+  "capabilities": [$(echo "$CAPABILITIES" | sed 's/,/", "/g' | sed 's/^/"/' | sed 's/$/"/')],
+  "version": "1.0.0"
+}
+EOF
+
+# Update plugin registry
+python3 -c "
+import json
+with open('plugins/registry.json', 'r') as f: registry = json.load(f)
+registry['plugins']['$TOOL_NAME'] = {
+    'name': '$TOOL_DESC',
+    'version': '1.0.0', 
+    'entry': 'plugins/$TOOL_NAME/src/main.py',
+    'capabilities': [c.strip() for c in '$CAPABILITIES'.split(',')]
+}
+with open('plugins/registry.json', 'w') as f: json.dump(registry, f, indent=2)
+"
+
+echo "✅ Plugin '$TOOL_NAME' generated successfully!"
+echo "📍 Location: plugins/$TOOL_NAME/"
+echo "🔧 Test with: python3 plugins/$TOOL_NAME/src/main.py"
+"""
+
+[tasks."ai:code-review"]
+description = "AI-powered code review using TGPT"
+run = """#!/usr/bin/env bash
+set -euo pipefail
+
+if ! command -v tgpt &>/dev/null; then
+    echo "❌ TGPT not found"
+    exit 1
+fi
+
+# Determine what to review
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    echo "📊 Analyzing Git changes for AI code review..."
+    
+    # Get changed files
+    CHANGED_FILES=$(git diff --name-only HEAD~1 2>/dev/null || git diff --name-only --cached)
+    
+    if [ -z "$CHANGED_FILES" ]; then
+        echo "⚠️ No changes detected"
+        exit 0
+    fi
+    
+    echo "📁 Changed files: $CHANGED_FILES"
+    
+    # Generate diff for review
+    DIFF_CONTENT=$(git diff HEAD~1 2>/dev/null || git diff --cached)
+    
+    echo "🧠 Analyzing changes with AI..."
+    
+    REVIEW_PROMPT="Perform a comprehensive code review of the following changes:
+
+$DIFF_CONTENT
+
+Focus on:
+1. Security vulnerabilities (SQL injection, path traversal, etc.)
+2. Code quality and best practices
+3. Performance considerations
+4. Maintainability and readability
+5. Error handling
+6. Testing considerations
+
+Provide specific, actionable feedback with line references where possible."
+
+    REVIEW_OUTPUT=$(tgpt --markdown "$REVIEW_PROMPT")
+    
+    # Save review to file
+    REVIEW_FILE="ai_code_review_$(date +%Y%m%d_%H%M%S).md"
+    echo "$REVIEW_OUTPUT" > "$REVIEW_FILE"
+    
+    echo "✅ AI code review completed!"
+    echo "📄 Review saved to: $REVIEW_FILE"
+    
+    # Display review
+    if command -v glow &>/dev/null; then
+        glow "$REVIEW_FILE"
+    else
+        cat "$REVIEW_FILE"
+    fi
+    
+else
+    echo "❌ Not in a Git repository"
+    exit 1
+fi
+"""
+
+#-------------------------------------------------------------------------------
+# Unified CLI Interface
+#-------------------------------------------------------------------------------
+[tasks."cli:unified"]
+description = "Launch the unified CLI interface with all tools integrated"
+aliases = ["cli", "ui"]
+run = """#!/usr/bin/env python3
+import os
+import sys
+import json
+import subprocess
+from pathlib import Path
+
+def load_plugin_registry():
+    \"\"\"Load available plugins from registry.\"\"\"
+    registry_path = Path("plugins/registry.json")
+    if registry_path.exists():
+        with open(registry_path) as f:
+            return json.load(f)
+    return {"plugins": {}}
+
+def main():
+    \"\"\"Unified CLI interface.\"\"\"
+    print("🚀 Unified Terminal Automation System")
+    print("═" * 50)
+    
+    registry = load_plugin_registry()
+    
+    if len(sys.argv) < 2:
+        print("Available commands:")
+        print("  warp           - Warp session recovery and management")
+        print("  cursor         - Cursor AI editor automation")
+        print("  windsurf       - Windsurf integration")
+        print("  plugins        - Plugin management")
+        print("  ai             - AI-powered automation")
+        print("  system         - System management")
+        print("")
+        print(f"Available plugins: {', '.join(registry['plugins'].keys())}")
+        print("")
+        print("Usage: mise run cli:unified <command> [args...]")
+        return
+    
+    command = sys.argv[1]
+    args = sys.argv[2:]
+    
+    # Route commands to appropriate handlers
+    if command == "warp":
+        handle_warp_command(args)
+    elif command == "cursor":
+        handle_cursor_command(args)
+    elif command == "plugins":
+        handle_plugin_command(args)
+    elif command == "ai":
+        handle_ai_command(args)
+    elif command == "system":
+        handle_system_command(args)
+    else:
+        print(f"❌ Unknown command: {command}")
+        sys.exit(1)
+
+def handle_warp_command(args):
+    \"\"\"Handle Warp-specific commands.\"\"\"
+    if not args or args[0] == "help":
+        print("Warp commands:")
+        print("  recover [hours]  - Extract and create recovery script")
+        print("  export           - Export to Obsidian format")
+        print("  backup          - Create session backup")
+        return
+    
+    if args[0] == "recover":
+        hours = int(args[1]) if len(args) > 1 else 24
+        print(f"🔄 Running Warp session recovery for last {hours} hours...")
+        subprocess.run([sys.executable, "warp_session_recovery.py"])
+
+def handle_cursor_command(args):
+    \"\"\"Handle Cursor-specific commands.\"\"\"
+    print("🎯 Cursor integration coming soon...")
+    print("Planned features: token management, auth bypass, session persistence")
+
+def handle_plugin_command(args):
+    \"\"\"Handle plugin management commands.\"\"\"
+    if not args:
+        registry = load_plugin_registry()
+        print("📦 Installed plugins:")
+        for name, info in registry["plugins"].items():
+            status = "✅" if Path(info["entry"]).exists() else "❌"
+            print(f"  {status} {name} - {info.get('name', 'No description')}")
+        return
+    
+    if args[0] == "create":
+        subprocess.run(["mise", "run", "ai:generate-plugin"])
+
+def handle_ai_command(args):
+    \"\"\"Handle AI-powered automation commands.\"\"\"
+    if not args:
+        print("🤖 AI commands:")
+        print("  generate-plugin  - Create new plugin with AI")
+        print("  code-review     - AI code review")
+        print("  chat [query]    - Interactive AI chat")
+        return
+    
+    if args[0] == "generate-plugin":
+        subprocess.run(["mise", "run", "ai:generate-plugin"])
+    elif args[0] == "code-review":
+        subprocess.run(["mise", "run", "ai:code-review"])
+    elif args[0] == "chat":
+        query = " ".join(args[1:]) if len(args) > 1 else ""
+        if query:
+            subprocess.run(["tgpt", query])
+        else:
+            subprocess.run(["tgpt"])
+
+def handle_system_command(args):
+    \"\"\"Handle system management commands.\"\"\"
+    if not args:
+        print("⚙️ System commands:")
+        print("  status      - System health check")
+        print("  bootstrap   - Initialize system")
+        print("  sync        - GitOps sync")
+        return
+    
+    if args[0] == "status":
+        subprocess.run(["mise", "run", "system:health-check"])
+    elif args[0] == "bootstrap":
+        subprocess.run(["mise", "run", "system:bootstrap"])
+    elif args[0] == "sync":
+        subprocess.run(["mise", "run", "gitops:sync"])
+
+if __name__ == "__main__":
+    main()
+"""
+
+#-------------------------------------------------------------------------------
+# Development Workflow Automation
+#-------------------------------------------------------------------------------
+[tasks."dev:setup"]
+description = "Intelligent project setup based on detected type"
+run = """#!/usr/bin/env bash
+set -euo pipefail
+
+echo "🔍 Detecting project type..."
+
+# Enhanced project detection
+detect_project_type() {
+    if [ -f "mise.toml" ] && grep -q "unified.*automation" mise.toml; then
+        echo "unified-automation"
+    elif [ -f "warp_session_recovery.py" ]; then
+        echo "warp-session-suite"
+    elif [ -f "pyproject.toml" ] && grep -q "\\[tool.pdm\\]" pyproject.toml; then
+        echo "python-pdm"
+    elif [ -f "Cargo.toml" ]; then
+        echo "rust"
+    else
+        echo "generic"
+    fi
+}
+
+PROJECT_TYPE=$(detect_project_type)
+echo "📋 Detected project type: $PROJECT_TYPE"
+
+case "$PROJECT_TYPE" in
+    "unified-automation")
+        echo "🚀 Setting up Unified Terminal Automation System..."
+        mise run system:bootstrap
+        ;;
+    "warp-session-suite")
+        echo "🔧 Setting up Warp Session Suite..."
+        if [ ! -d "test_data" ]; then
+            mkdir -p test_data
+            echo "📊 Created test_data directory"
+        fi
+        python3 -m pip install --user pandas sqlite-utils || echo "⚠️ Optional dependencies not installed"
+        ;;
+    "python-pdm")
+        echo "🐍 Setting up Python PDM project..."
+        pdm install
+        ;;
+    "rust")
+        echo "🦀 Setting up Rust project..."
+        cargo fetch
+        ;;
+    *)
+        echo "📦 Generic project setup..."
+        if [ -f "requirements.txt" ]; then
+            pip install -r requirements.txt
+        elif [ -f "package.json" ]; then
+            npm install
+        fi
+        ;;
+esac
+
+echo "✅ Project setup complete!"
+"""
+
+[tasks."system:health-check"]
+description = "Comprehensive system health check with auto-healing"
+run = """#!/usr/bin/env bash
+set -euo pipefail
+
+echo "🏥 System Health Check"
+echo "====================="
+
+ISSUES_FOUND=0
+
+# Check mise tools
+echo "📦 Checking mise tools..."
+if mise doctor >/dev/null 2>&1; then
+    echo "✅ Mise tools healthy"
+else
+    echo "❌ Mise tools issues detected"
+    ISSUES_FOUND=$((ISSUES_FOUND + 1))
+fi
+
+# Check plugin system
+echo "🔌 Checking plugin system..."
+if [ -f "plugins/registry.json" ] && [ -d "plugins/warp" ]; then
+    echo "✅ Plugin system operational"
+else
+    echo "❌ Plugin system incomplete"
+    ISSUES_FOUND=$((ISSUES_FOUND + 1))
+fi
+
+# Check Git repository health
+echo "📚 Checking Git repository..."
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    if git status --porcelain | grep -q .; then
+        echo "⚠️ Uncommitted changes detected"
+        git status --short
+    else
+        echo "✅ Git repository clean"
+    fi
+else
+    echo "❌ Not in a Git repository"
+    ISSUES_FOUND=$((ISSUES_FOUND + 1))
+fi
+
+# Check Python environment
+echo "🐍 Checking Python environment..."
+if python3 -c "import sqlite3, json, pathlib" 2>/dev/null; then
+    echo "✅ Python environment ready"
+else
+    echo "❌ Python environment issues"
+    ISSUES_FOUND=$((ISSUES_FOUND + 1))
+fi
+
+# Summary
+echo ""
+echo "📊 Health Check Summary"
+echo "======================="
+if [ $ISSUES_FOUND -eq 0 ]; then
+    echo "✅ System is healthy!"
+else
+    echo "⚠️ Found $ISSUES_FOUND issues"
+    echo "💡 Run 'mise run system:bootstrap' to resolve issues"
+fi
+"""
+
+#===============================================================================
+# HOOKS - Runtime Integration
+#===============================================================================
+[hooks]
+[hooks.env_setup]
+run = """#!/usr/bin/env bash
+set -euo pipefail
+
+# Initialize plugin system if not already done
+if [ ! -d "plugins" ] && [ -f "mise.toml" ] && grep -q "unified.*automation" mise.toml; then
+    echo "🔌 Initializing plugin system..."
+    mkdir -p plugins
+fi
+
+# Load environment from .env if present
+if [ -f ".env" ] && command -v dotenvx &>/dev/null; then
+    dotenvx load || true
+fi
+"""
+
+[hooks.post_task]
+run = """#!/usr/bin/env bash
+set -euo pipefail
+
+# Log task execution for analytics
+TASK_LOG="${XDG_STATE_HOME:-$HOME/.local/state}/unified_automation_task_history.log"
+mkdir -p "$(dirname "$TASK_LOG")"
+
+TIMESTAMP=$(date +"%Y-%m-%dT%H:%M:%S%z")
+echo "${TIMESTAMP} | Task: ${MISE_TASK_ID:-unknown} | Exit: ${MISE_TASK_EXIT_CODE:-N/A} | Duration: ${MISE_TASK_RUN_TIME_MS:-N/A}ms" >> "$TASK_LOG"
+"""

@@ -1,8 +1,8 @@
-# Warp Session Recovery - 2025-07-27 20:22
+# Warp Session Recovery - 2025-07-27 20:45
 
 **Database**: `test_data/warp_test.sqlite`
 **Time Range**: Last 24 hours
-**Extracted**: 2025-07-27T20:22:20.652313
+**Extracted**: 2025-07-27T20:45:43.101732
 
 ## 📊 Session Stats
 

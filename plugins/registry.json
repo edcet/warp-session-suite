@@ -1,0 +1,46 @@
+{
+  "plugins": {
+    "warp": {
+      "name": "Warp Terminal Integration",
+      "version": "1.0.0",
+      "entry": "plugins/warp/src/main.py",
+      "capabilities": ["session_recovery", "database_access", "ai_integration"]
+    },
+    "cursor": {
+      "name": "Cursor AI Editor Integration", 
+      "version": "1.0.0",
+      "entry": "plugins/cursor/src/main.py",
+      "capabilities": ["token_management", "auth_bypass", "session_persistence"]
+    },
+    "windsurf": {
+      "name": "Windsurf Integration",
+      "version": "1.0.0", 
+      "entry": "plugins/windsurf/src/main.py",
+      "capabilities": ["context_routing", "command_enhancement"]
+    },
+    "pearai": {
+      "name": "PearAI Integration",
+      "version": "1.0.0",
+      "entry": "plugins/pearai/src/main.py", 
+      "capabilities": ["ai_assistance", "code_generation", "session_sync"]
+    },
+    "trae": {
+      "name": "Trae Terminal Enhancement",
+      "version": "1.0.0",
+      "entry": "plugins/trae/src/main.py",
+      "capabilities": ["terminal_multiplexing", "session_orchestration"]
+    },
+    "core": {
+      "name": "Core Session Management",
+      "version": "1.0.0",
+      "entry": "plugins/core/session/manager.py",
+      "capabilities": ["unified_session", "cross_tool_state", "backup_restore"]
+    },
+    "ai": {
+      "name": "AI Integration Hub",
+      "version": "1.0.0",
+      "entry": "plugins/ai/tgpt/integration.py", 
+      "capabilities": ["code_generation", "analysis", "automation"]
+    }
+  }
+}
