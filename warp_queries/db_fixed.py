@@ -74,7 +74,12 @@ class WarpDB:
     
     def table_info(self, table_name: str) -> list[dict]:
         """Get column information for a table."""
-        cursor = self.conn.execute(f"PRAGMA table_info({table_name})")
+        # Validate table name to prevent SQL injection
+        if not table_name.replace('_', '').replace('-', '').isalnum():
+            raise ValueError(f"Invalid table name: {table_name}")
+        
+        # Use parameterized query for PRAGMA
+        cursor = self.conn.execute("PRAGMA table_info(?)", (table_name,))
         columns = [desc[0] for desc in cursor.description]
         return [dict(zip(columns, row)) for row in cursor.fetchall()]
     

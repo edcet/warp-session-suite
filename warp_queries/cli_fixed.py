@@ -100,6 +100,12 @@ def main():
                     print("Usage: info <table_name>")
                     return
                 table_name = sys.argv[2]
+                
+                # Validate table name for security
+                if not table_name.replace('_', '').replace('-', '').isalnum():
+                    print(f"Invalid table name: {table_name}")
+                    return
+                    
                 info = db.table_info(table_name)
                 print(f"Schema for table '{table_name}':")
                 for col in info:
@@ -110,6 +116,12 @@ def main():
                     print("Usage: query <query_name>")
                     return
                 query_name = sys.argv[2]
+                
+                # Validate query name to prevent potential injection
+                if not query_name.replace('_', '').isalnum():
+                    print(f"Invalid query name: {query_name}")
+                    return
+                    
                 if not hasattr(WarpSQL, query_name):
                     print(f"Unknown query: {query_name}")
                     return

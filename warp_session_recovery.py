@@ -5,6 +5,7 @@ A working tool that actually understands Warp's database schema and unique featu
 """
 
 import json
+import os
 import sqlite3
 import sys
 from pathlib import Path
@@ -28,7 +29,12 @@ class WarpSessionRecovery:
     def _find_warp_database(self, db_path: Optional[str] = None) -> Path:
         """Find Warp's SQLite database."""
         if db_path:
-            return Path(db_path).expanduser().resolve()
+            # Validate and sanitize the database path
+            path = Path(db_path).expanduser().resolve()
+            # Ensure the path doesn't contain traversal attempts
+            if '..' in str(path) or not str(path).startswith(str(Path.home())):
+                raise ValueError("Invalid database path - potential path traversal detected")
+            return path
             
         # Real Warp paths
         paths = [
@@ -75,9 +81,9 @@ class WarpSessionRecovery:
                 c.hostname,
                 c.session_id
             FROM commands c 
-            WHERE c.start_ts > datetime('now', '-%d hours')
+            WHERE c.start_ts > datetime('now', ? || ' hours')
             ORDER BY c.start_ts DESC
-        """ % hours)
+        """, (f"-{hours}",))
         
         # Get command blocks with outputs
         blocks = self.query("""
@@ -92,9 +98,9 @@ class WarpSessionRecovery:
                 datetime(b.completed_ts) as completed_at,
                 b.ai_metadata
             FROM blocks b 
-            WHERE b.start_ts > datetime('now', '-%d hours')
+            WHERE b.start_ts > datetime('now', ? || ' hours')
             ORDER BY b.start_ts DESC
-        """ % hours)
+        """, (f"-{hours}",))
         
         # Get AI conversations
         ai_conversations = self.query("""
@@ -110,9 +116,9 @@ class WarpSessionRecovery:
                 ab.output as ai_response
             FROM ai_queries aq
             LEFT JOIN ai_blocks ab ON ab.exchange_id = aq.exchange_id
-            WHERE aq.start_ts > datetime('now', '-%d hours')
+            WHERE aq.start_ts > datetime('now', ? || ' hours')
             ORDER BY aq.start_ts DESC
-        """ % hours)
+        """, (f"-{hours}",))
         
         # Get window and tab structure
         windows = self.query("""
@@ -160,11 +166,11 @@ class WarpSessionRecovery:
                 AVG(CASE WHEN c.exit_code = 0 THEN 1.0 ELSE 0.0 END) as success_rate
             FROM commands c 
             WHERE c.pwd IS NOT NULL 
-              AND c.start_ts > datetime('now', '-%d hours')
+              AND c.start_ts > datetime('now', ? || ' hours')
             GROUP BY c.pwd
             HAVING COUNT(*) >= 1
             ORDER BY command_count DESC, last_activity DESC
-        """ % hours)
+        """, (f"-{hours}",))
         
         return {
             'extraction_time': datetime.now().isoformat(),
@@ -249,16 +255,20 @@ class WarpSessionRecovery:
             "echo 'You can now continue your work where you left off.'"
         ])
         
-        with open(output_file, 'w') as f:
+        # Secure the output file path to prevent path traversal
+        safe_output_file = os.path.join(os.getcwd(), os.path.basename(output_file))
+        with open(safe_output_file, 'w') as f:
             f.write('\n'.join(script_lines))
         
         # Make executable
-        Path(output_file).chmod(0o755)
-        print(f"✅ Recovery script created: {output_file}")
+        Path(safe_output_file).chmod(0o755)
+        print(f"✅ Recovery script created: {safe_output_file}")
     
     def create_obsidian_export(self, session_data: Dict, output_dir: str = "obsidian_export"):
         """Create Obsidian-compatible markdown files."""
-        output_path = Path(output_dir)
+        # Secure the output directory path to prevent path traversal
+        safe_output_dir = os.path.join(os.getcwd(), os.path.basename(output_dir))
+        output_path = Path(safe_output_dir)
         output_path.mkdir(exist_ok=True)
         
         print(f"📝 Creating Obsidian export in: {output_path}")
@@ -337,8 +347,10 @@ class WarpSessionRecovery:
                 "",
             ])
             for project in session_data['projects']:
+                # Secure path handling to prevent path traversal
+                safe_project_name = os.path.basename(os.path.normpath(project['project_path']))
                 session_note.extend([
-                    f"### [[{Path(project['project_path']).name}]]",
+                    f"### [[{safe_project_name}]]",
                     f"**Path**: `{project['project_path']}`",
                     f"**Commands**: {project['command_count']}",
                     f"**Branches**: {project['branches'] or 'None'}",

@@ -1,5 +1,5 @@
 {
-  "extraction_time": "2025-07-27T20:06:01.053125",
+  "extraction_time": "2025-07-27T20:22:20.652313",
   "database_path": "test_data/warp_test.sqlite",
   "time_range_hours": 24,
   "commands": [
