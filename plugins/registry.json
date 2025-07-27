@@ -19,16 +19,16 @@
       "capabilities": ["context_routing", "command_enhancement"]
     },
     "pearai": {
-      "name": "PearAI Integration",
+      "name": "PearAI AI Assistant Integration",
       "version": "1.0.0",
       "entry": "plugins/pearai/src/main.py", 
-      "capabilities": ["ai_assistance", "code_generation", "session_sync"]
+      "capabilities": ["ai_assistance", "code_generation", "session_sync", "intelligent_completion"]
     },
     "trae": {
-      "name": "Trae Terminal Enhancement",
+      "name": "Trae Terminal Enhancement & Orchestration",
       "version": "1.0.0",
       "entry": "plugins/trae/src/main.py",
-      "capabilities": ["terminal_multiplexing", "session_orchestration"]
+      "capabilities": ["terminal_multiplexing", "session_orchestration", "workspace_management", "process_coordination"]
     },
     "core": {
       "name": "Core Session Management",
@@ -41,6 +41,12 @@
       "version": "1.0.0",
       "entry": "plugins/ai/tgpt/integration.py", 
       "capabilities": ["code_generation", "analysis", "automation"]
+    },
+    "analytics": {
+      "name": "Advanced Analytics & Performance Monitoring",
+      "version": "1.0.0",
+      "entry": "plugins/analytics/src/main.py",
+      "capabilities": ["performance_monitoring", "usage_analytics", "predictive_analysis", "system_optimization"]
     }
   }
 }

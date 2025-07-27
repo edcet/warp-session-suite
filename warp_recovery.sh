@@ -1,6 +1,6 @@
 #!/bin/bash
 # Warp Session Recovery Script
-# Generated: 2025-07-27T20:45:43.101732
+# Generated: 2025-07-27T21:01:26.224263
 # From database: test_data/warp_test.sqlite
 
 echo '🚀 Starting Warp session recovery...'
