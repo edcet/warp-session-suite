@@ -1,0 +1,595 @@
+database_schema:
+  metadata:
+    extraction_tool: sqlite-utils
+    format_version: "1.0"
+    total_tables: 41
+  tables:
+    - columns:
+        - version
+        - run_on
+      schema: |-
+        CREATE TABLE __diesel_schema_migrations (
+               version VARCHAR(50) PRIMARY KEY NOT NULL,
+               run_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+      table: __diesel_schema_migrations
+    - columns:
+        - id
+        - active_tab_index
+        - window_width
+        - window_height
+        - origin_x
+        - origin_y
+        - quake_mode
+        - universal_search_width
+        - warp_ai_width
+        - voltron_width
+        - warp_drive_index_width
+        - fullscreen_state
+      schema: |-
+        CREATE TABLE windows (
+          id INTEGER PRIMARY KEY NOT NULL,
+          active_tab_index INTEGER NOT NULL CHECK (active_tab_index >= 0),
+          window_width FLOAT CHECK (window_width >= 0),
+          window_height FLOAT CHECK (window_height >= 0),
+          origin_x FLOAT,
+          origin_y FLOAT, quake_mode BOOLEAN NOT NULL DEFAULT FALSE, universal_search_width FLOAT CHECK (universal_search_width >= 0), warp_ai_width FLOAT CHECK (warp_ai_width >= 0), voltron_width FLOAT CHECK (voltron_width >= 0), warp_drive_index_width FLOAT CHECK (warp_drive_index_width >= 0), fullscreen_state INTEGER NOT NULL DEFAULT 0,
+          CONSTRAINT Bound_integrity CHECK (
+            COALESCE(window_width, window_height, origin_x, origin_y) IS NOT NULL
+            OR COALESCE(window_width, window_height, origin_x, origin_y) IS NULL
+          )
+        )
+      table: windows
+    - columns:
+        - id
+        - window_id
+        - custom_title
+        - color
+      schema: |-
+        CREATE TABLE tabs (
+          id INTEGER PRIMARY KEY NOT NULL,
+          window_id INTEGER NOT NULL, custom_title TEXT, color TEXT,
+          FOREIGN KEY(window_id) REFERENCES windows(id)
+        )
+      table: tabs
+    - columns:
+        - id
+        - tab_id
+        - parent_pane_node_id
+        - flex
+        - is_leaf
+      schema: |-
+        CREATE TABLE pane_nodes (
+          id INTEGER PRIMARY KEY NOT NULL,
+          tab_id INTEGER NOT NULL REFERENCES tabs(id),
+          parent_pane_node_id INTEGER REFERENCES pane_nodes(id),
+          flex FLOAT,
+          is_leaf BOOLEAN NOT NULL,
+          CONSTRAINT root_or_has_parent CHECK (
+        	parent_pane_node_id IS NULL AND flex IS NULL
+        	OR parent_pane_node_id IS NOT NULL AND flex IS NOT NULL
+          )
+        )
+      table: pane_nodes
+    - columns:
+        - id
+        - pane_node_id
+        - horizontal
+      schema: |-
+        CREATE TABLE pane_branches (
+          id INTEGER PRIMARY KEY NOT NULL,
+          pane_node_id INTEGER NOT NULL UNIQUE REFERENCES pane_nodes(id),
+          horizontal BOOLEAN NOT NULL
+        )
+      table: pane_branches
+    - columns:
+        - id
+        - pane_leaf_uuid
+        - stylized_command
+        - stylized_output
+        - pwd
+        - git_branch
+        - virtual_env
+        - conda_env
+        - exit_code
+        - did_execute
+        - completed_ts
+        - start_ts
+        - ps1
+        - honor_ps1
+        - shell
+        - user
+        - host
+        - is_background
+        - rprompt
+        - prompt_snapshot
+        - block_id
+        - ai_metadata
+        - is_local
+      schema: |-
+        CREATE TABLE blocks (
+            id INTEGER PRIMARY KEY,
+            pane_leaf_uuid BLOB NOT NULL,
+            stylized_command BLOB NOT NULL,
+            stylized_output BLOB NOT NULL,
+            pwd TEXT,
+            git_branch TEXT,
+            virtual_env TEXT,
+            conda_env TEXT,
+            exit_code INTEGER NOT NULL,
+            did_execute BOOLEAN NOT NULL
+        , completed_ts DATETIME, start_ts DATETIME, ps1 TEXT, honor_ps1 BOOLEAN NOT NULL DEFAULT FALSE, shell TEXT, user TEXT, host TEXT, is_background BOOLEAN NOT NULL DEFAULT false, rprompt TEXT, prompt_snapshot TEXT, block_id TEXT NOT NULL DEFAULT "", ai_metadata TEXT, is_local BOOLEAN)
+      table: blocks
+    - columns:
+        - id
+        - active_window_id
+      schema: |-
+        CREATE TABLE app (
+            id INTEGER PRIMARY KEY,
+            active_window_id INTEGER REFERENCES windows(id)
+        )
+      table: app
+    - columns:
+        - id
+        - firebase_uid
+      schema: |-
+        CREATE TABLE users (
+           id INTEGER NOT NULL PRIMARY KEY,
+           firebase_uid  TEXT NOT NULL UNIQUE
+        )
+      table: users
+    - columns:
+        - id
+        - data
+      schema: |-
+        CREATE TABLE workflows (
+            id INTEGER NOT NULL PRIMARY KEY,
+            -- Diesel does not let you specify JSON as data type
+            data TEXT NOT NULL)
+      table: workflows
+    - columns:
+        - id
+        - title
+        - data
+      schema: |-
+        CREATE TABLE notebooks (
+          id INTEGER NOT NULL PRIMARY KEY,
+          title TEXT,
+          data TEXT)
+      table: notebooks
+    - columns:
+        - id
+        - name
+        - is_open
+        - is_warp_pack
+      schema: |-
+        CREATE TABLE folders (
+            id INTEGER NOT NULL PRIMARY KEY,
+            name TEXT NOT NULL,
+            is_open BOOLEAN NOT NULL
+        , is_warp_pack BOOLEAN NOT NULL DEFAULT FALSE)
+      table: folders
+    - columns:
+        - id
+        - is_pending
+        - object_type
+        - revision_ts
+        - server_id
+        - client_id
+        - shareable_object_id
+        - author_id
+        - retry_count
+        - metadata_last_updated_ts
+        - trashed_ts
+        - folder_id
+        - is_welcome_object
+        - creator_uid
+        - last_editor_uid
+        - current_editor
+      schema: |-
+        CREATE TABLE "object_metadata" (
+            id INTEGER NOT NULL PRIMARY KEY,
+            is_pending BOOLEAN NOT NULL,
+            object_type TEXT NOT NULL,
+            revision_ts INTEGER,
+            server_id TEXT,
+            client_id TEXT,
+            shareable_object_id INTEGER NOT NULL,
+            author_id INTEGER,
+            retry_count INTEGER NOT NULL,
+            metadata_last_updated_ts BIGINTEGER,
+            trashed_ts BIGINTEGER,
+            folder_id TEXT
+        , is_welcome_object BOOLEAN NOT NULL DEFAULT false, creator_uid TEXT, last_editor_uid TEXT, current_editor TEXT)
+      table: object_metadata
+    - columns:
+        - id
+        - command
+        - exit_code
+        - start_ts
+        - completed_ts
+        - pwd
+        - shell
+        - username
+        - hostname
+        - session_id
+        - git_branch
+        - cloud_workflow_id
+        - workflow_command
+      schema: |-
+        CREATE TABLE commands (
+            id INTEGER NOT NULL PRIMARY KEY,
+            command TEXT NOT NULL,
+            exit_code INTEGER,
+            start_ts DATETIME,
+            completed_ts DATETIME,
+            pwd TEXT,
+            shell TEXT,
+            username TEXT,
+            hostname TEXT,
+            session_id BIGINTEGER,
+            git_branch TEXT,
+            cloud_workflow_id TEXT
+        , workflow_command TEXT)
+      table: commands
+    - columns:
+        - pane_node_id
+        - kind
+        - is_focused
+      schema: |-
+        CREATE TABLE "pane_leaves" (
+            pane_node_id INTEGER NOT NULL UNIQUE REFERENCES pane_nodes(id),
+            -- This does not have a CHECK constraint because, when we add new kinds of panes in the future,
+            -- it's difficult to update the constraint.
+            kind TEXT NOT NULL,
+            is_focused BOOLEAN NOT NULL DEFAULT FALSE,
+
+            PRIMARY KEY (pane_node_id, kind)
+        )
+      table: pane_leaves
+    - columns:
+        - id
+        - kind
+        - uuid
+        - cwd
+        - is_active
+        - shell_launch_data
+        - input_config
+      schema: |-
+        CREATE TABLE terminal_panes (
+            id INTEGER PRIMARY KEY NOT NULL,
+            kind TEXT NOT NULL DEFAULT 'terminal' CHECK (kind = 'terminal'),
+
+            uuid BLOB NOT NULL UNIQUE,
+            cwd TEXT,
+            is_active BOOLEAN NOT NULL DEFAULT FALSE, shell_launch_data TEXT, input_config TEXT,
+
+            FOREIGN KEY (id, kind) REFERENCES "pane_leaves"(pane_node_id, kind)
+        )
+      table: terminal_panes
+    - columns:
+        - id
+        - kind
+        - notebook_id
+        - local_path
+      schema: "CREATE TABLE notebook_panes (\n  id INTEGER PRIMARY KEY NOT NULL,\n  kind TEXT NOT NULL DEFAULT 'notebook' CHECK (kind = 'notebook'),\n\n  -- The sync ID of the notebook. This may be null if the notebook has not yet been saved.\n  notebook_id TEXT, local_path BLOB,\n  \n  FOREIGN KEY (id, kind) REFERENCES pane_leaves (pane_node_id, kind)\n)"
+      table: notebook_panes
+    - columns:
+        - firebase_uid
+        - photo_url
+        - email
+        - display_name
+      schema: |-
+        CREATE TABLE user_profiles (
+            firebase_uid TEXT NOT NULL PRIMARY KEY,
+            photo_url TEXT NOT NULL,
+            email TEXT NOT NULL,
+            display_name TEXT
+        )
+      table: user_profiles
+    - columns:
+        - id
+        - time_of_next_refresh
+      schema: |-
+        CREATE TABLE cloud_objects_refreshes (
+          id INTEGER PRIMARY KEY NOT NULL, time_of_next_refresh DATETIME NOT NULL)
+      table: cloud_objects_refreshes
+    - columns:
+        - id
+        - data
+      schema: |-
+        CREATE TABLE generic_string_objects (
+            id INTEGER NOT NULL PRIMARY KEY,
+            data TEXT NOT NULL
+        )
+      table: generic_string_objects
+    - columns:
+        - id
+        - hashed_object_id
+        - timestamp
+        - action
+        - data
+        - count
+        - oldest_timestamp
+        - latest_timestamp
+        - pending
+        - processed_at_timestamp
+      schema: |-
+        CREATE TABLE object_actions (
+          id INTEGER PRIMARY KEY NOT NULL,
+          hashed_object_id TEXT NOT NULL,
+          timestamp DATETIME,
+          -- An enum here would be overly restrictive for future action types.
+          action TEXT NOT NULL,
+          data TEXT,
+          count INTEGER,
+          oldest_timestamp DATETIME,
+          latest_timestamp DATETIME,
+          pending BOOLEAN
+        , processed_at_timestamp DATETIME)
+      table: object_actions
+    - columns:
+        - experiment
+      schema: |-
+        CREATE TABLE server_experiments (
+            experiment TEXT PRIMARY KEY NOT NULL
+        )
+      table: server_experiments
+    - columns:
+        - id
+        - kind
+        - env_var_collection_id
+      schema: "CREATE TABLE env_var_collection_panes (\n  id INTEGER PRIMARY KEY NOT NULL,\n  kind TEXT NOT NULL DEFAULT 'env_var_collection' CHECK (kind = 'env_var_collection'),\n\n  -- The sync ID of the EVC. This may be null if the EVC has not yet been saved.\n  env_var_collection_id TEXT,\n  \n  FOREIGN KEY (id, kind) REFERENCES pane_leaves (pane_node_id, kind)\n)"
+      table: env_var_collection_panes
+    - columns:
+        - id
+        - kind
+        - local_path
+      schema: |-
+        CREATE TABLE code_panes (
+          id INTEGER PRIMARY KEY NOT NULL,
+          kind TEXT NOT NULL DEFAULT 'code' CHECK (kind = 'code'),
+
+          -- The sync ID of the notebook. This may be null if the notebook has not yet been saved.
+          local_path BLOB,
+
+          FOREIGN KEY (id, kind) REFERENCES pane_leaves (pane_node_id, kind)
+        )
+      table: code_panes
+    - columns:
+        - id
+        - kind
+        - workflow_id
+      schema: "CREATE TABLE workflow_panes (\n  id INTEGER PRIMARY KEY NOT NULL,\n  kind TEXT NOT NULL DEFAULT 'workflow' CHECK (kind = 'workflow'),\n\n  -- The sync ID of the EVC. This may be null if the EVC has not yet been saved.\n  workflow_id TEXT,\n  \n  FOREIGN KEY (id, kind) REFERENCES pane_leaves (pane_node_id, kind)\n)"
+      table: workflow_panes
+    - columns:
+        - id
+        - exchange_id
+        - conversation_id
+        - start_ts
+        - input
+        - working_directory
+        - output_status
+        - model_id
+        - planning_model_id
+        - coding_model_id
+      schema: |-
+        CREATE TABLE "ai_queries" (
+          id INTEGER PRIMARY KEY NOT NULL,
+          exchange_id TEXT NOT NULL,
+          conversation_id TEXT NOT NULL,
+          start_ts DATETIME NOT NULL,
+          -- FOREIGN KEY REFERENCES pane_leaves(uuid) but we don't mark it as a foreign key because it causes problems with cascading deletes.
+          input TEXT NOT NULL,
+          working_directory TEXT
+        , output_status TEXT NOT NULL, model_id TEXT NOT NULL DEFAULT '', planning_model_id TEXT NOT NULL DEFAULT '', coding_model_id TEXT NOT NULL DEFAULT '')
+      table: ai_queries
+    - columns:
+        - id
+        - exchange_id
+        - pane_leaf_uuid
+        - output
+        - is_hidden
+        - is_passive_code_gen_block
+      schema: |-
+        CREATE TABLE ai_blocks (
+            id INTEGER PRIMARY KEY NOT NULL,
+            exchange_id TEXT NOT NULL,
+            -- Would be marked FOREIGN KEY REFERENCES pane_leaves(uuid) but we don't because we can't enforce it properly when handling pane removal.
+            pane_leaf_uuid BLOB NOT NULL,
+            output TEXT NOT NULL, is_hidden BOOLEAN NOT NULL DEFAULT FALSE, is_passive_code_gen_block BOOLEAN NOT NULL DEFAULT FALSE,
+            FOREIGN KEY(exchange_id) REFERENCES "ai_queries"(exchange_id)
+        )
+      table: ai_blocks
+    - columns:
+        - email
+      schema: |-
+        CREATE TABLE current_user_information (
+            email TEXT PRIMARY KEY NOT NULL
+        )
+      table: current_user_information
+    - columns:
+        - id
+        - object_metadata_id
+        - subject_type
+        - subject_id
+        - subject_uid
+        - permissions_last_updated_at
+        - object_guests
+        - anyone_with_link_access_level
+        - anyone_with_link_source
+      schema: |-
+        CREATE TABLE "object_permissions" (
+          id INTEGER NOT NULL PRIMARY KEY,
+          object_metadata_id INTEGER NOT NULL REFERENCES object_metadata(id) ON DELETE CASCADE,
+          subject_type TEXT NOT NULL,
+          subject_id TEXT,
+          subject_uid TEXT NOT NULL,
+          permissions_last_updated_at BIGINTEGER,
+          object_guests BLOB
+        , anyone_with_link_access_level TEXT, anyone_with_link_source BLOB)
+      table: object_permissions
+    - columns:
+        - id
+        - name
+        - server_uid
+      schema: |-
+        CREATE TABLE "teams" (
+          id integer NOT NULL PRIMARY KEY,
+          name TEXT NOT NULL,
+          server_uid TEXT NOT NULL UNIQUE
+        )
+      table: teams
+    - columns:
+        - id
+        - name
+        - server_uid
+        - is_selected
+      schema: |-
+        CREATE TABLE workspaces (
+            id integer NOT NULL PRIMARY KEY,
+            name TEXT NOT NULL,
+            server_uid TEXT NOT NULL UNIQUE
+        , is_selected BOOLEAN NOT NULL DEFAULT FALSE)
+      table: workspaces
+    - columns:
+        - id
+        - workspace_server_uid
+        - team_server_uid
+      schema: |-
+        CREATE TABLE workspace_teams (
+            id integer NOT NULL PRIMARY KEY,
+            workspace_server_uid TEXT NOT NULL UNIQUE,
+            team_server_uid TEXT NOT NULL UNIQUE,
+            FOREIGN KEY (workspace_server_uid) REFERENCES workspaces (server_uid),
+            FOREIGN KEY (team_server_uid) REFERENCES teams (server_uid)
+        )
+      table: workspace_teams
+    - columns:
+        - id
+        - kind
+        - current_page
+      schema: |-
+        CREATE TABLE settings_panes (
+          id INTEGER PRIMARY KEY NOT NULL,
+          kind TEXT NOT NULL DEFAULT 'settings' CHECK (kind = 'settings'),
+
+          current_page TEXT NOT NULL DEFAULT 'Account',
+
+          FOREIGN KEY (id, kind) REFERENCES pane_leaves (pane_node_id, kind)
+        )
+      table: settings_panes
+    - columns:
+        - id
+        - kind
+      schema: |-
+        CREATE TABLE ai_memory_panes (
+          id INTEGER PRIMARY KEY NOT NULL,
+          kind TEXT NOT NULL DEFAULT 'ai_memory' CHECK (kind = 'ai_memory'),
+
+          FOREIGN KEY (id, kind) REFERENCES pane_leaves (pane_node_id, kind)
+        )
+      table: ai_memory_panes
+    - columns:
+        - id
+        - kind
+      schema: |-
+        CREATE TABLE mcp_server_panes (
+          id INTEGER PRIMARY KEY NOT NULL,
+          kind TEXT NOT NULL DEFAULT 'mcp_server' CHECK (kind = 'mcp_server'),
+
+          FOREIGN KEY (id, kind) REFERENCES pane_leaves (pane_node_id, kind)
+        )
+      table: mcp_server_panes
+    - columns:
+        - id
+        - conversation_id
+        - exchanges
+        - phase
+        - has_dispatched_plan
+        - pane_leaf_uuid
+      schema: |-
+        CREATE TABLE last_ai_conversations (
+             id INTEGER PRIMARY KEY NOT NULL,
+             conversation_id TEXT NOT NULL,
+             exchanges TEXT NOT NULL,
+             phase TEXT NOT NULL,
+             has_dispatched_plan BOOLEAN NOT NULL,
+             pane_leaf_uuid BLOB NOT NULL
+         )
+      table: last_ai_conversations
+    - columns:
+        - repo_path
+        - navigated_ts
+        - modified_ts
+        - queried_ts
+      schema: |-
+        CREATE TABLE codebase_index_metadata (
+            repo_path TEXT NOT NULL PRIMARY KEY,
+            navigated_ts DATETIME,
+            modified_ts DATETIME,
+            queried_ts DATETIME
+        )
+      table: codebase_index_metadata
+    - columns:
+        - mcp_server_uuid
+        - environment_variables
+      schema: |-
+        CREATE TABLE mcp_environment_variables (
+            mcp_server_uuid BLOB PRIMARY KEY NOT NULL,
+            environment_variables TEXT NOT NULL
+        )
+      table: mcp_environment_variables
+    - columns:
+        - id
+        - conversation_id
+        - active_task_id
+        - conversation_data
+        - last_modified_at
+      schema: |-
+        CREATE TABLE agent_conversations (
+            id INTEGER PRIMARY KEY NOT NULL,
+            conversation_id TEXT NOT NULL,
+            active_task_id TEXT,
+            conversation_data TEXT NOT NULL,
+            last_modified_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+      table: agent_conversations
+    - columns:
+        - id
+        - conversation_id
+        - task_id
+        - task
+        - last_modified_at
+      schema: |-
+        CREATE TABLE agent_tasks (
+            id INTEGER PRIMARY KEY NOT NULL,
+            conversation_id TEXT NOT NULL,
+            task_id TEXT NOT NULL,
+            task BLOB NOT NULL,
+            last_modified_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (conversation_id) REFERENCES agent_conversations (conversation_id)
+        )
+      table: agent_tasks
+    - columns:
+        - id
+        - mcp_server_uuid
+      schema: |-
+        CREATE TABLE active_mcp_servers (
+            id INTEGER PRIMARY KEY NOT NULL,
+            mcp_server_uuid TEXT NOT NULL,
+            UNIQUE(mcp_server_uuid)
+        )
+      table: active_mcp_servers
+    - columns:
+        - id
+        - team_id
+        - settings_json
+      schema: |-
+        CREATE TABLE team_settings (
+            id INTEGER PRIMARY KEY NOT NULL,
+            team_id INTEGER NOT NULL UNIQUE,
+            settings_json TEXT NOT NULL,
+            FOREIGN KEY (team_id) REFERENCES teams (id)
+        )
+      table: team_settings
