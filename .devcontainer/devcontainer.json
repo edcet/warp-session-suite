@@ -1,0 +1,102 @@
+{
+  "name": "Warp Session Suite - AI-Native Development Environment",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "devcontainer",
+  "workspaceFolder": "/workspace",
+  "shutdownAction": "stopCompose",
+  
+  // Revolutionary features for modern development
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "configureZshAsDefaultShell": true,
+      "installOhMyZsh": true,
+      "upgradePackages": true
+    },
+    "ghcr.io/devcontainers/features/git:1": {
+      "ppa": true,
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {
+      "installDirectlyFromGitHubRelease": true,
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "moby": true,
+      "azureDnsAutoDetection": true,
+      "installDockerBuildx": true,
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/nix:1": {
+      "multiUser": false,
+      "version": "latest"
+    }
+  },
+  
+  // AI-native development optimizations
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode-remote.remote-containers",
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "ms-python.python",
+        "ms-python.debugpy",
+        "bradlc.vscode-tailwindcss",
+        "rust-lang.rust-analyzer",
+        "golang.go",
+        "ms-vscode.vscode-typescript-next",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-json",
+        "redhat.vscode-yaml",
+        "ms-azuretools.vscode-docker",
+        "hashicorp.terraform",
+        "ms-kubernetes-tools.vscode-kubernetes-tools",
+        "Continue.continue",
+        "Codeium.codeium"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "python.linting.enabled": true,
+        "python.linting.pylintEnabled": true,
+        "python.formatting.provider": "black",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.organizeImports": true
+        },
+        "files.watcherExclude": {
+          "**/.git/objects/**": true,
+          "**/.git/subtree-cache/**": true,
+          "**/node_modules/*/**": true,
+          "**/.cache/**": true,
+          "**/target/**": true
+        }
+      }
+    }
+  },
+  
+  // Performance and security optimizations
+  "mounts": [
+    "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.gitconfig,target=/home/vscode/.gitconfig,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.config/gh,target=/home/vscode/.config/gh,type=bind,consistency=cached",
+    "source=warp-session-cache,target=/workspace/.cache,type=volume",
+    "source=mise-cache,target=/home/vscode/.cache/mise,type=volume",
+    "source=cargo-cache,target=/home/vscode/.cargo,type=volume"
+  ],
+  
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "postStartCommand": "mise install && direnv allow",
+  
+  // Security hardening
+  "containerEnv": {
+    "DOCKER_BUILDKIT": "1",
+    "BUILDX_EXPERIMENTAL": "1",
+    "MISE_EXPERIMENTAL": "1",
+    "UV_SYSTEM_PYTHON": "1"
+  },
+  
+  "remoteUser": "vscode",
+  "containerUser": "vscode"
+}
