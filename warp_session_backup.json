@@ -1,0 +1,227 @@
+{
+  "extraction_time": "2025-07-27T23:59:33.314998",
+  "database_path": "test_data/warp_test.sqlite",
+  "time_range_hours": 24,
+  "commands": [
+    {
+      "id": 7,
+      "command": "git push origin develop",
+      "working_directory": "/Users/test/other-project",
+      "git_branch": "develop",
+      "exit_code": 0,
+      "started_at": "2025-07-27 19:50:48",
+      "completed_at": "2025-07-27 19:50:51",
+      "shell": "zsh",
+      "username": "testuser",
+      "hostname": "localhost",
+      "session_id": 124
+    },
+    {
+      "id": 6,
+      "command": "ls -la",
+      "working_directory": "/Users/test/other-project",
+      "git_branch": "develop",
+      "exit_code": 0,
+      "started_at": "2025-07-27 19:35:48",
+      "completed_at": "2025-07-27 19:35:49",
+      "shell": "zsh",
+      "username": "testuser",
+      "hostname": "localhost",
+      "session_id": 124
+    },
+    {
+      "id": 5,
+      "command": "python script.py",
+      "working_directory": "/Users/test/other-project",
+      "git_branch": "develop",
+      "exit_code": 0,
+      "started_at": "2025-07-27 19:20:48",
+      "completed_at": "2025-07-27 19:20:53",
+      "shell": "zsh",
+      "username": "testuser",
+      "hostname": "localhost",
+      "session_id": 124
+    },
+    {
+      "id": 4,
+      "command": "cd ../other-project",
+      "working_directory": "/Users/test",
+      "git_branch": null,
+      "exit_code": 0,
+      "started_at": "2025-07-27 19:05:48",
+      "completed_at": "2025-07-27 19:05:48",
+      "shell": "zsh",
+      "username": "testuser",
+      "hostname": "localhost",
+      "session_id": 124
+    },
+    {
+      "id": 3,
+      "command": "git commit -m \"fix tests\"",
+      "working_directory": "/Users/test/my-project",
+      "git_branch": "main",
+      "exit_code": 0,
+      "started_at": "2025-07-27 18:45:48",
+      "completed_at": "2025-07-27 18:45:50",
+      "shell": "zsh",
+      "username": "testuser",
+      "hostname": "localhost",
+      "session_id": 123
+    },
+    {
+      "id": 2,
+      "command": "npm test",
+      "working_directory": "/Users/test/my-project",
+      "git_branch": "main",
+      "exit_code": 1,
+      "started_at": "2025-07-27 18:35:48",
+      "completed_at": "2025-07-27 18:36:18",
+      "shell": "zsh",
+      "username": "testuser",
+      "hostname": "localhost",
+      "session_id": 123
+    },
+    {
+      "id": 1,
+      "command": "git status",
+      "working_directory": "/Users/test/my-project",
+      "git_branch": "main",
+      "exit_code": 0,
+      "started_at": "2025-07-27 18:05:48",
+      "completed_at": "2025-07-27 18:05:49",
+      "shell": "zsh",
+      "username": "testuser",
+      "hostname": "localhost",
+      "session_id": 123
+    }
+  ],
+  "blocks": [
+    {
+      "id": 3,
+      "command": "python script.py",
+      "output": "Processing 1000 rows...\\nGenerated report.csv\\nSummary: 95% success rate",
+      "working_directory": "/Users/test/other-project",
+      "git_branch": "develop",
+      "exit_code": 0,
+      "started_at": "2025-07-27 19:20:48",
+      "completed_at": "2025-07-27 19:20:53",
+      "ai_metadata": "{\"ai_suggested\": true}"
+    },
+    {
+      "id": 2,
+      "command": "npm test",
+      "output": "FAIL src/test.js\\n  \u2715 should pass (5 ms)\\n  Expected: true\\n  Received: false",
+      "working_directory": "/Users/test/my-project",
+      "git_branch": "main",
+      "exit_code": 1,
+      "started_at": "2025-07-27 18:35:48",
+      "completed_at": "2025-07-27 18:36:18",
+      "ai_metadata": null
+    },
+    {
+      "id": 1,
+      "command": "git status",
+      "output": "On branch main\\nnothing to commit, working tree clean",
+      "working_directory": "/Users/test/my-project",
+      "git_branch": "main",
+      "exit_code": 0,
+      "started_at": "2025-07-27 18:05:48",
+      "completed_at": "2025-07-27 18:05:49",
+      "ai_metadata": null
+    }
+  ],
+  "ai_conversations": [
+    {
+      "id": 3,
+      "exchange_id": "exc-003",
+      "conversation_id": "conv-002",
+      "started_at": "2025-07-27 19:45:48",
+      "input": "Explain this git push error and how to resolve it",
+      "working_directory": "/Users/test/other-project",
+      "model_id": "claude-3",
+      "output_status": "success",
+      "ai_response": null
+    },
+    {
+      "id": 2,
+      "exchange_id": "exc-002",
+      "conversation_id": "conv-001",
+      "started_at": "2025-07-27 18:55:48",
+      "input": "Generate a Python script to process CSV files and output summary statistics",
+      "working_directory": "/Users/test/other-project",
+      "model_id": "gpt-4",
+      "output_status": "success",
+      "ai_response": null
+    },
+    {
+      "id": 1,
+      "exchange_id": "exc-001",
+      "conversation_id": "conv-001",
+      "started_at": "2025-07-27 18:25:48",
+      "input": "How do I fix this failing npm test?",
+      "working_directory": "/Users/test/my-project",
+      "model_id": "gpt-4",
+      "output_status": "success",
+      "ai_response": null
+    }
+  ],
+  "windows": [
+    {
+      "window_id": 1,
+      "active_tab_index": 0,
+      "window_width": 1200.0,
+      "window_height": 800.0,
+      "quake_mode": 0,
+      "tab_id": 1,
+      "tab_title": "my-project",
+      "tab_color": null
+    },
+    {
+      "window_id": 1,
+      "active_tab_index": 0,
+      "window_width": 1200.0,
+      "window_height": 800.0,
+      "quake_mode": 0,
+      "tab_id": 2,
+      "tab_title": "other-project",
+      "tab_color": null
+    }
+  ],
+  "panes": [],
+  "projects": [
+    {
+      "project_path": "/Users/test/other-project",
+      "command_count": 3,
+      "branch_count": 1,
+      "first_activity": "2025-07-27 19:20:48",
+      "last_activity": "2025-07-27 19:50:48",
+      "branches": "develop",
+      "success_rate": 1.0
+    },
+    {
+      "project_path": "/Users/test/my-project",
+      "command_count": 3,
+      "branch_count": 1,
+      "first_activity": "2025-07-27 18:05:48",
+      "last_activity": "2025-07-27 18:45:48",
+      "branches": "main",
+      "success_rate": 0.6666666666666666
+    },
+    {
+      "project_path": "/Users/test",
+      "command_count": 1,
+      "branch_count": 0,
+      "first_activity": "2025-07-27 19:05:48",
+      "last_activity": "2025-07-27 19:05:48",
+      "branches": null,
+      "success_rate": 1.0
+    }
+  ],
+  "stats": {
+    "total_commands": 7,
+    "total_blocks": 3,
+    "total_ai_conversations": 3,
+    "total_windows": 1,
+    "total_projects": 3
+  }
+}

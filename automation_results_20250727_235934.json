@@ -1,0 +1,297 @@
+{
+  "parallel_tests": {
+    "total_tests": 6,
+    "passed": 5,
+    "failed": 1,
+    "success_rate": 83.33333333333334,
+    "total_time_seconds": 0.36058568954467773,
+    "average_time_per_test": 0.06009761492411295,
+    "results": {
+      "warp": {
+        "plugin": "warp",
+        "success": true,
+        "stdout": "\u2705 Warp plugin initialized successfully\n\ud83d\udd0d Extracting session state from last 1 hours...\n\ud83d\udcca Extracted 0 commands\n\ud83d\udcca Extracted 0 projects\n\u2705 All operations completed successfully!\n",
+        "stderr": "",
+        "duration": 1753660772.4222937
+      },
+      "cursor": {
+        "plugin": "cursor",
+        "success": true,
+        "stdout": "\u2705 Cursor plugin initialized successfully\n\ud83d\udcca Cursor Session Data:\n  Config Dir: /root/.cursor\n  Session Files: 0\n  Workspace Files: 0\n\u2705 All operations completed successfully!\n",
+        "stderr": "",
+        "duration": 1753660772.4482079
+      },
+      "windsurf": {
+        "plugin": "windsurf",
+        "success": true,
+        "stdout": "\u2705 Windsurf plugin initialized successfully\n\ud83d\udcca Windsurf Session Data:\n  Active: False\n  Context Routes: 0\n  Enhanced Commands: 0\n\u2705 All operations completed successfully!\n",
+        "stderr": "",
+        "duration": 1753660772.5260272
+      },
+      "pearai": {
+        "plugin": "pearai",
+        "success": true,
+        "stdout": "\u2705 PearAI plugin initialized successfully\n\ud83d\udcca PearAI Session Data:\n  Active: True\n  Available Models: 3\n  Recent Generations: 2\n\u2705 All operations completed successfully!\n",
+        "stderr": "",
+        "duration": 1753660772.5533726
+      },
+      "trae": {
+        "plugin": "trae",
+        "success": true,
+        "stdout": "\u2705 Trae plugin initialized successfully\n\ud83d\udcca Trae Session Data:\n  Active: False\n  Multiplexer: None\n  Active Sessions: 0\n  Workspaces: 0\n\u2705 All operations completed successfully!\n",
+        "stderr": "",
+        "duration": 1753660772.5922434
+      },
+      "ai": {
+        "plugin": "ai",
+        "success": false,
+        "stdout": "\u274c TGPT plugin initialization failed - is tgpt installed?\n",
+        "stderr": "",
+        "duration": 1753660772.6077874
+      }
+    }
+  },
+  "intelligent_workflow": {
+    "workflow_name": "intelligent_orchestration",
+    "total_steps": 5,
+    "successful_steps": 4,
+    "success_rate": 80.0,
+    "total_duration": 0.7340104579925537,
+    "steps": [
+      {
+        "step": "health_check",
+        "success": false,
+        "duration": 2.1,
+        "output": "Health issues detected"
+      },
+      {
+        "step": "warp_analysis",
+        "success": true,
+        "duration": 1.8,
+        "output": "Warp patterns analyzed"
+      },
+      {
+        "step": "ai_generation",
+        "success": true,
+        "duration": 3.2,
+        "output": "Code generated successfully"
+      },
+      {
+        "step": "multi_plugin_coordination",
+        "success": true,
+        "duration": 2.5,
+        "output": "Coordinated 3 plugins"
+      },
+      {
+        "step": "recovery_validation",
+        "success": true,
+        "duration": 4.1,
+        "output": "Recovery validated"
+      }
+    ],
+    "timestamp": "2025-07-27T23:59:33.342286"
+  },
+  "performance_benchmark": {
+    "total_benchmarks": 3,
+    "total_benchmark_time": 1.0323426723480225,
+    "benchmarks": {
+      "plugin_initialization": {
+        "warp": {
+          "time_seconds": 0.08723926544189453,
+          "success": true
+        },
+        "cursor": {
+          "time_seconds": 0.1109461784362793,
+          "success": true
+        },
+        "windsurf": {
+          "time_seconds": 0.09170103073120117,
+          "success": true
+        },
+        "pearai": {
+          "time_seconds": 0.11584639549255371,
+          "success": true
+        },
+        "trae": {
+          "time_seconds": 0.15415215492248535,
+          "success": true
+        }
+      },
+      "cli_response_time": {
+        "command_1": {
+          "command": "python3 unified_cli.py --help",
+          "time_seconds": 0.099945068359375,
+          "success": true
+        },
+        "command_2": {
+          "command": "python3 unified_cli.py plugins",
+          "time_seconds": 0.09002089500427246,
+          "success": true
+        },
+        "command_3": {
+          "command": "python3 unified_cli.py warp help",
+          "time_seconds": 0.10996174812316895,
+          "success": true
+        }
+      },
+      "concurrent_operations": {
+        "total_time_seconds": 0.172529935836792,
+        "operations_count": 3,
+        "success_rate": 66.66666666666666,
+        "average_time_per_operation": 0.057509978612264
+      }
+    },
+    "timestamp": "2025-07-27T23:59:34.374847"
+  },
+  "system_validation": {
+    "plugin_ecosystem": {
+      "total_plugins": 10,
+      "active_plugins": 10,
+      "plugins": {
+        "warp": {
+          "entry_exists": true,
+          "capabilities": [
+            "session_recovery",
+            "database_access",
+            "ai_integration"
+          ],
+          "version": "1.0.0"
+        },
+        "cursor": {
+          "entry_exists": true,
+          "capabilities": [
+            "token_management",
+            "auth_bypass",
+            "session_persistence"
+          ],
+          "version": "1.0.0"
+        },
+        "windsurf": {
+          "entry_exists": true,
+          "capabilities": [
+            "context_routing",
+            "command_enhancement"
+          ],
+          "version": "1.0.0"
+        },
+        "pearai": {
+          "entry_exists": true,
+          "capabilities": [
+            "ai_assistance",
+            "code_generation",
+            "session_sync",
+            "intelligent_completion"
+          ],
+          "version": "1.0.0"
+        },
+        "trae": {
+          "entry_exists": true,
+          "capabilities": [
+            "terminal_multiplexing",
+            "session_orchestration",
+            "workspace_management",
+            "process_coordination"
+          ],
+          "version": "1.0.0"
+        },
+        "core": {
+          "entry_exists": true,
+          "capabilities": [
+            "unified_session",
+            "cross_tool_state",
+            "backup_restore"
+          ],
+          "version": "1.0.0"
+        },
+        "ai": {
+          "entry_exists": true,
+          "capabilities": [
+            "code_generation",
+            "analysis",
+            "automation"
+          ],
+          "version": "1.0.0"
+        },
+        "analytics": {
+          "entry_exists": true,
+          "capabilities": [
+            "performance_monitoring",
+            "usage_analytics",
+            "predictive_analysis",
+            "system_optimization"
+          ],
+          "version": "1.0.0"
+        },
+        "code_quality": {
+          "entry_exists": true,
+          "capabilities": [
+            "trunk_integration",
+            "lefthook_management",
+            "formatting",
+            "linting",
+            "parsing",
+            "git_hooks"
+          ],
+          "version": "1.0.0"
+        },
+        "cicd": {
+          "entry_exists": true,
+          "capabilities": [
+            "github_actions",
+            "gitlab_ci",
+            "jenkins_integration",
+            "docker_builds",
+            "kubernetes_deploy",
+            "automated_testing",
+            "deployment_strategies",
+            "pipeline_orchestration"
+          ],
+          "version": "1.0.0"
+        }
+      }
+    },
+    "configuration": {
+      "mise.toml": {
+        "exists": true,
+        "size_bytes": 27833
+      },
+      "unified_cli.py": {
+        "exists": true,
+        "size_bytes": 10739
+      },
+      "plugins/registry.json": {
+        "exists": true,
+        "size_bytes": 2477
+      }
+    },
+    "functional_tests": {
+      "unified_cli_help": {
+        "success": true,
+        "execution_time": 1.0,
+        "stdout_length": 621
+      },
+      "plugin_listing": {
+        "success": true,
+        "execution_time": 1.0,
+        "stdout_length": 2000
+      },
+      "warp_plugin_test": {
+        "success": true,
+        "execution_time": 1.0,
+        "stdout_length": 174
+      }
+    },
+    "performance_validation": {
+      "thresholds": {
+        "cli_response_time_max": 2.0,
+        "plugin_init_time_max": 5.0,
+        "memory_usage_max": 80.0
+      },
+      "cli_responsive": true,
+      "plugins_fast_init": true,
+      "memory_efficient": true
+    },
+    "system_health_score": 100.0,
+    "timestamp": "2025-07-27T23:59:34.692267"
+  }
+}

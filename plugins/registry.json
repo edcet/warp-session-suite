@@ -1,0 +1,64 @@
+{
+  "plugins": {
+    "warp": {
+      "name": "Warp Terminal Integration",
+      "version": "1.0.0",
+      "entry": "plugins/warp/src/main.py",
+      "capabilities": ["session_recovery", "database_access", "ai_integration"]
+    },
+    "cursor": {
+      "name": "Cursor AI Editor Integration", 
+      "version": "1.0.0",
+      "entry": "plugins/cursor/src/main.py",
+      "capabilities": ["token_management", "auth_bypass", "session_persistence"]
+    },
+    "windsurf": {
+      "name": "Windsurf Integration",
+      "version": "1.0.0", 
+      "entry": "plugins/windsurf/src/main.py",
+      "capabilities": ["context_routing", "command_enhancement"]
+    },
+    "pearai": {
+      "name": "PearAI AI Assistant Integration",
+      "version": "1.0.0",
+      "entry": "plugins/pearai/src/main.py", 
+      "capabilities": ["ai_assistance", "code_generation", "session_sync", "intelligent_completion"]
+    },
+    "trae": {
+      "name": "Trae Terminal Enhancement & Orchestration",
+      "version": "1.0.0",
+      "entry": "plugins/trae/src/main.py",
+      "capabilities": ["terminal_multiplexing", "session_orchestration", "workspace_management", "process_coordination"]
+    },
+    "core": {
+      "name": "Core Session Management",
+      "version": "1.0.0",
+      "entry": "plugins/core/session/manager.py",
+      "capabilities": ["unified_session", "cross_tool_state", "backup_restore"]
+    },
+    "ai": {
+      "name": "AI Integration Hub",
+      "version": "1.0.0",
+      "entry": "plugins/ai/tgpt/integration.py", 
+      "capabilities": ["code_generation", "analysis", "automation"]
+    },
+    "analytics": {
+      "name": "Advanced Analytics & Performance Monitoring",
+      "version": "1.0.0",
+      "entry": "plugins/analytics/src/main.py",
+      "capabilities": ["performance_monitoring", "usage_analytics", "predictive_analysis", "system_optimization"]
+    },
+    "code_quality": {
+      "name": "Code Quality & Standards Management",
+      "version": "1.0.0",
+      "entry": "plugins/code_quality/src/main.py",
+      "capabilities": ["trunk_integration", "lefthook_management", "formatting", "linting", "parsing", "git_hooks"]
+    },
+    "cicd": {
+      "name": "CI/CD Integration & Deployment Automation",
+      "version": "1.0.0",
+      "entry": "plugins/cicd/src/main.py",
+      "capabilities": ["github_actions", "gitlab_ci", "jenkins_integration", "docker_builds", "kubernetes_deploy", "automated_testing", "deployment_strategies", "pipeline_orchestration"]
+    }
+  }
+}

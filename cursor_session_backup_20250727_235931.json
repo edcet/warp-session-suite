@@ -1,0 +1,13 @@
+{
+  "plugin_name": "cursor",
+  "plugin_version": "1.0.0",
+  "capabilities": [
+    "token_management",
+    "auth_bypass",
+    "session_persistence"
+  ],
+  "config_dir": "/root/.cursor",
+  "session_timestamp": "2025-07-27T23:59:31.926765",
+  "session_files": [],
+  "workspace_files": []
+}

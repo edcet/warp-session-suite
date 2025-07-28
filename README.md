@@ -1,42 +1,44 @@
-# 🚀 Warp Session Suite
+# 🚀 Unified Terminal Automation System
 
-> **Revolutionary AI-Native Development Environment for Modern Terminal Workflows**
+> **Revolutionary AI-Native Development Environment with Multi-Tool Integration**
 
-A comprehensive mono-repository architected for the future of terminal-based development, featuring cutting-edge AI integration, session management, and distributed collaboration patterns.
+A comprehensive automation platform that unifies Warp Terminal session recovery with extensible support for Cursor, Windsurf, PearAI, and other modern development tools through a GitOps-driven, AI-augmented architecture.
 
 ## 🎯 Quick Start
 
 ```bash
-# Clone and initialize
-git clone https://github.com/edcet/warp-session-suite.git
-cd warp-session-suite
+# Bootstrap the complete system
+mise run system:bootstrap
 
-# Automatic environment setup
-direnv allow
-mise install
+# Launch unified CLI
+python unified_cli.py
 
-# Start development container
-code . # VS Code will prompt to reopen in container
+# Warp session recovery (enhanced)
+python unified_cli.py warp recover 24
+
+# AI-powered automation
+python unified_cli.py ai chat "help me optimize my workflow"
+
+# System health check
+python unified_cli.py system status
 ```
 
 ## 🏗️ Architecture Overview
 
-This repository implements a **radical development paradigm** that transcends conventional tooling limitations:
+### 🧠 Unified Plugin System
+- **Modular Architecture**: Extensible plugins for Warp, Cursor, Windsurf, PearAI, Trae
+- **Cross-Tool Session Management**: Unified state across multiple terminal tools
+- **AI-Powered Generation**: TGPT integration for plugin creation and automation
 
-### 🧠 AI-Native Design
-- **Local AI Inference**: Integrated Ollama service for privacy-first development assistance
-- **Context-Aware Tooling**: AI models pre-configured for codebase understanding
-- **Distributed Collaboration**: Async-first workflows with AI mediation
+### ⚡ GitOps-Driven Configuration
+- **Versioned Configuration**: All settings managed via Git
+- **Reproducible Environments**: Mise-orchestrated tool management
+- **Auto-Healing Systems**: Proactive health checks and recovery
 
-### ⚡ Performance Optimizations
-- **Parallel Tool Loading**: Mise jobs configured for maximum CPU utilization
-- **Intelligent Caching**: Multi-layer cache strategy for tools and dependencies
-- **Container Optimization**: Pre-warmed development environments
-
-### 🔒 Security Hardening
-- **Ephemeral Histories**: Disabled shell history in containers
-- **SSH Key Management**: Secure key mounting with proper permissions
-- **Environment Isolation**: Containerized workflows with network segmentation
+### 🤖 AI-Native Workflows
+- **Code Generation**: TGPT-powered plugin and template creation
+- **Intelligent Analysis**: AI code reviews and pattern recognition
+- **Interactive Automation**: Command suggestions and workflow optimization
 
 ## 🛠️ Technology Stack
 

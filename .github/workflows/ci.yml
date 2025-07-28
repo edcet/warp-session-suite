@@ -1,0 +1,85 @@
+name: Unified Terminal Automation System CI
+'on':
+  push:
+    branches:
+    - main
+    - develop
+  pull_request:
+    branches:
+    - main
+  workflow_dispatch: null
+env:
+  PYTHON_VERSION: '3.12'
+  NODE_VERSION: '20'
+  MISE_EXPERIMENTAL: '1'
+jobs:
+  quality-check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup mise
+      uses: jdx/mise-action@v2
+      with:
+        experimental: true
+    - name: Install dependencies
+      run: mise install
+    - name: Run code quality checks
+      run: python3 plugins/code_quality/src/main.py check
+    - name: Run security scan
+      run: python3 plugins/code_quality/src/main.py security
+  plugin-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        plugin:
+        - warp
+        - cursor
+        - windsurf
+        - pearai
+        - trae
+        - analytics
+        - code_quality
+        - cicd
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    - name: Install plugin dependencies
+      run: |
+        pip3 install --user PyYAML
+    - name: Test plugin
+      run: |
+        if [ "${{ matrix.plugin }}" = "ai" ]; then
+          python3 plugins/ai/tgpt/integration.py test
+        else
+          python3 plugins/${{ matrix.plugin }}/src/main.py test
+        fi
+  system-integration:
+    runs-on: ubuntu-latest
+    needs:
+    - quality-check
+    - plugin-tests
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup mise
+      uses: jdx/mise-action@v2
+      with:
+        experimental: true
+    - name: Install dependencies
+      run: mise install
+    - name: Run system integration tests
+      run: python3 advanced_automation.py
+    - name: Run ultimate demo
+      run: python3 ultimate_demo.py
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: 'automation_results_*.json
+
+          ultimate_system_report_*.md
+
+          analytics_report_*.md'

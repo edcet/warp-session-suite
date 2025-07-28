@@ -1,0 +1,4 @@
+# Ignore all trunk cache and generated files
+*
+!.gitignore
+!trunk.yaml
