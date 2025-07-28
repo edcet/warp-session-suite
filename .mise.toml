@@ -237,3 +237,161 @@ fi
 
 echo "[OK] All schema files are valid!"
 '''
+
+# ---- Mentat AI Assistant integration ----
+[tasks."mentat:setup"]
+description = "Setup Mentat development environment with intelligent tool detection"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "🤖 Mentat AI Assistant - Intelligent Setup"
+echo "=========================================="
+
+# Use mise to ensure all tools are installed
+echo "📦 Installing tools from .tool-versions..."
+mise install
+
+# Python development stack
+echo "🐍 Setting up Python development stack..."
+PYTHON_CMD=$(mise which python)
+$PYTHON_CMD -m pip install --user --upgrade pip setuptools wheel
+
+# Install project dependencies if pyproject.toml exists
+if [[ -f pyproject.toml ]]; then
+    echo "📦 Installing project dependencies..."
+    $PYTHON_CMD -m pip install --user "typer[all]>=0.9" "duckdb>=1.1.3" "rich>=13.7"
+fi
+
+# Code quality tools aligned with trunk configuration
+echo "🔍 Installing code quality tools..."
+$PYTHON_CMD -m pip install --user black isort ruff mypy pylint bandit
+
+# Setup shell integration
+echo "🐚 Setting up shell integration..."
+mkdir -p ~/.local/bin
+if [[ ! -f ~/.local/bin/mentat-env ]]; then
+    ln -sf "$PWD/scripts/mentat-env.sh" ~/.local/bin/mentat-env
+    chmod +x ~/.local/bin/mentat-env
+fi
+
+echo "✅ Mentat setup complete! Run 'mise run mentat:doctor' to verify."
+'''
+
+[tasks."mentat:format"]
+description = "Intelligent code formatting using trunk with fallback strategies"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "🎨 Mentat Intelligent Formatting"
+echo "==============================="
+
+# Use trunk if available, otherwise fall back to individual tools
+if command -v trunk >/dev/null 2>&1; then
+    echo "🌳 Using trunk for unified formatting..."
+    trunk fmt --all
+else
+    echo "🔧 Using individual formatters..."
+    
+    # Python formatting
+    if command -v black >/dev/null 2>&1; then
+        echo "⚫ Formatting Python with black..."
+        find . -name "*.py" -not -path "./.git/*" -not -path "./.trunk/*" | xargs black --quiet
+    fi
+    
+    if command -v isort >/dev/null 2>&1; then
+        echo "📦 Organizing imports with isort..."
+        find . -name "*.py" -not -path "./.git/*" -not -path "./.trunk/*" | xargs isort --profile black --quiet
+    fi
+    
+    if command -v ruff >/dev/null 2>&1; then
+        echo "⚡ Running ruff fixes..."
+        ruff check --fix --quiet . || true
+        ruff format --quiet . || true
+    fi
+    
+    # Shell script formatting
+    if command -v shfmt >/dev/null 2>&1; then
+        echo "🐚 Formatting shell scripts..."
+        find . -name "*.sh" -not -path "./.git/*" -not -path "./.trunk/*" | xargs shfmt -w -i 2 2>/dev/null || true
+    fi
+fi
+
+echo "✅ Formatting complete!"
+'''
+
+[tasks."mentat:doctor"]
+description = "Health check for Mentat development environment"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "🏥 Mentat Environment Health Check"
+echo "================================="
+
+check_tool() {
+    local tool=$1
+    local status="❌"
+    local version=""
+    
+    if command -v "$tool" >/dev/null 2>&1; then
+        status="✅"
+        version=$($tool --version 2>/dev/null | head -n1 || echo "available")
+    fi
+    
+    printf "%-15s %s %s\\n" "$tool" "$status" "$version"
+}
+
+echo "📊 Core Tools:"
+check_tool "mise"
+check_tool "python3"
+check_tool "node"
+check_tool "fzf"
+check_tool "glow"
+check_tool "trunk"
+check_tool "black"
+check_tool "ruff"
+
+echo ""
+echo "🔧 Environment Status:"
+[[ -f .tool-versions ]] && echo "✅ .tool-versions detected" || echo "⚠️ .tool-versions missing"
+[[ -f .trunk/trunk.yaml ]] && echo "✅ trunk.yaml detected" || echo "⚠️ trunk.yaml missing"
+[[ -f .envrc ]] && echo "✅ .envrc detected" || echo "⚠️ .envrc missing"
+
+echo ""
+echo "🎯 Warp Integration:"
+[[ -x scripts/ws-commands ]] && echo "✅ ws-commands available" || echo "⚠️ ws-commands missing"
+[[ -x scripts/ws-blocks ]] && echo "✅ ws-blocks available" || echo "⚠️ ws-blocks missing"
+[[ -x scripts/ws-ai ]] && echo "✅ ws-ai available" || echo "⚠️ ws-ai missing"
+
+echo ""
+echo "🚀 Performance:"
+echo "CPU cores: $(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 'unknown')"
+echo "MISE_JOBS: ${MISE_JOBS:-default}"
+echo "Cache: ${MISE_CACHE_DIR:-default}"
+'''
+
+[tasks."mentat:clean"]
+description = "Clean Mentat temporary files and caches"
+run = '''
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "🧹 Cleaning Mentat environment..."
+
+# Clean Python cache
+find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+find . -name "*.pyc" -delete 2>/dev/null || true
+
+# Clean mise cache if needed
+if [[ -n "${MISE_CACHE_DIR:-}" && -d "$MISE_CACHE_DIR" ]]; then
+    echo "🗑️ Cleaning mise cache..."
+    rm -rf "$MISE_CACHE_DIR"/*
+fi
+
+# Clean temporary logs
+rm -f /tmp/mentat-* 2>/dev/null || true
+
+echo "✅ Cleanup complete!"
+'''
