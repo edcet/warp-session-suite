@@ -1,0 +1,71 @@
+stages:
+- validate
+- test
+- build
+- deploy
+variables:
+  PYTHON_VERSION: '3.12'
+  DOCKER_IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+before_script:
+- mise install
+code_quality:
+  stage: validate
+  script:
+  - python3 plugins/code_quality/src/main.py check
+  - python3 plugins/code_quality/src/main.py security
+  artifacts:
+    reports:
+      codequality: code-quality-report.json
+    expire_in: 1 week
+plugin_tests:
+  stage: test
+  parallel:
+    matrix:
+    - PLUGIN: warp
+    - PLUGIN: cursor
+    - PLUGIN: windsurf
+    - PLUGIN: pearai
+    - PLUGIN: trae
+    - PLUGIN: ai
+    - PLUGIN: analytics
+    - PLUGIN: code_quality
+  script:
+  - python3 plugins/$PLUGIN/src/main.py test
+system_integration:
+  stage: test
+  script:
+  - python3 advanced_automation.py
+  - python3 ultimate_demo.py
+  artifacts:
+    paths:
+    - automation_results_*.json
+    - ultimate_system_report_*.md
+    - analytics_report_*.md
+    expire_in: 1 week
+build_image:
+  stage: build
+  script:
+  - docker build -t $DOCKER_IMAGE_TAG .
+  - docker push $DOCKER_IMAGE_TAG
+  only:
+  - main
+  - develop
+deploy_staging:
+  stage: deploy
+  script:
+  - kubectl apply -f k8s/staging/
+  environment:
+    name: staging
+    url: https://staging.example.com
+  only:
+  - develop
+deploy_production:
+  stage: deploy
+  script:
+  - kubectl apply -f k8s/production/
+  environment:
+    name: production
+    url: https://production.example.com
+  only:
+  - main
+  when: manual

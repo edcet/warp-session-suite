@@ -61,6 +61,12 @@ lefthook = "1.7.12"
 prettier = "3.3.3"
 eslint = "8.57.0"
 
+# CI/CD & Deployment Tools
+kubectl = "1.29.0"
+helm = "3.14.0"
+docker = "25.0.0"
+terraform = "1.7.0"
+
 #===============================================================================
 # GLOBAL ENVIRONMENT - XDG Compliant & Performance Optimized
 #===============================================================================

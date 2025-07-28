@@ -53,6 +53,12 @@
       "version": "1.0.0",
       "entry": "plugins/code_quality/src/main.py",
       "capabilities": ["trunk_integration", "lefthook_management", "formatting", "linting", "parsing", "git_hooks"]
+    },
+    "cicd": {
+      "name": "CI/CD Integration & Deployment Automation",
+      "version": "1.0.0",
+      "entry": "plugins/cicd/src/main.py",
+      "capabilities": ["github_actions", "gitlab_ci", "jenkins_integration", "docker_builds", "kubernetes_deploy", "automated_testing", "deployment_strategies", "pipeline_orchestration"]
     }
   }
 }
