@@ -189,7 +189,6 @@ run = "scripts/ws-blocks"
 description = "Browse AI conversations from Warp via fzf"
 run = "scripts/ws-ai"
 
-[projects.scripts]
 
 [tasks."schema:validate"]
 description = "Validate extracted schema files"
@@ -361,9 +360,9 @@ echo "🔧 Environment Status:"
 
 echo ""
 echo "🎯 Warp Integration:"
-[[ -x scripts/ws-commands ]] && echo "✅ ws-commands available" || echo "⚠️ ws-commands missing"
-[[ -x scripts/ws-blocks ]] && echo "✅ ws-blocks available" || echo "⚠️ ws-blocks missing"
-[[ -x scripts/ws-ai ]] && echo "✅ ws-ai available" || echo "⚠️ ws-ai missing"
+mise tasks | grep -q "ws-commands" && echo "✅ ws-commands available" || echo "⚠️ ws-commands missing"
+mise tasks | grep -q "ws-blocks" && echo "✅ ws-blocks available" || echo "⚠️ ws-blocks missing"  
+mise tasks | grep -q "ws-ai" && echo "✅ ws-ai available" || echo "⚠️ ws-ai missing"
 
 echo ""
 echo "🚀 Performance:"

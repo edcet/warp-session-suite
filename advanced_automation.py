@@ -198,9 +198,9 @@ class AdvancedAutomation:
                     "step": "warp_analysis",
                     "success": warp_analysis,
                     "duration": 1.8,
-                    "output": "Warp patterns analyzed"
-                    if warp_analysis
-                    else "Analysis failed",
+                    "output": (
+                        "Warp patterns analyzed" if warp_analysis else "Analysis failed"
+                    ),
                 }
             )
             print(
@@ -315,9 +315,11 @@ class AdvancedAutomation:
                     "step": "recovery_validation",
                     "success": recovery_validation,
                     "duration": 4.1,
-                    "output": "Recovery validated"
-                    if recovery_validation
-                    else "Validation failed",
+                    "output": (
+                        "Recovery validated"
+                        if recovery_validation
+                        else "Validation failed"
+                    ),
                 }
             )
             print(

@@ -683,9 +683,9 @@ class AutoHealingSystem:
             "healing_effectiveness": healing_effectiveness,
             "healing_required": True,
             "execution_results": execution_results,
-            "status": "healing_completed"
-            if healing_effectiveness > 50
-            else "healing_partial",
+            "status": (
+                "healing_completed" if healing_effectiveness > 50 else "healing_partial"
+            ),
         }
 
         print("\n🎉 Healing Cycle Complete!")

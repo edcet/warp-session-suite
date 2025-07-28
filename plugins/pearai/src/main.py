@@ -73,9 +73,9 @@ class PearAIPlugin(BasePlugin):
             "plugin_version": self.version,
             "capabilities": self.capabilities,
             "pearai_active": self.pearai_active,
-            "config_dir": str(self.pearai_config_dir)
-            if self.pearai_config_dir
-            else None,
+            "config_dir": (
+                str(self.pearai_config_dir) if self.pearai_config_dir else None
+            ),
             "session_timestamp": datetime.now().isoformat(),
         }
 

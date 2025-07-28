@@ -114,9 +114,9 @@ class TraePlugin(BasePlugin):
                                 sessions.append(
                                     {
                                         "session_id": parts[0],
-                                        "windows": parts[1].split()[0]
-                                        if parts[1]
-                                        else "0",
+                                        "windows": (
+                                            parts[1].split()[0] if parts[1] else "0"
+                                        ),
                                         "status": "active",
                                     }
                                 )

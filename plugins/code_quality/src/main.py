@@ -76,9 +76,9 @@ class CodeQualityPlugin(BasePlugin):
                 )
                 self.tools_status[tool_name] = {
                     "available": result.returncode == 0,
-                    "version": result.stdout.strip()
-                    if result.returncode == 0
-                    else None,
+                    "version": (
+                        result.stdout.strip() if result.returncode == 0 else None
+                    ),
                     "path": subprocess.run(
                         ["which", command[0]], capture_output=True, text=True
                     ).stdout.strip(),

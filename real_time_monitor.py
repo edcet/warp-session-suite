@@ -445,9 +445,11 @@ class RealTimeMonitor:
                         cpu_trend = (
                             "📈"
                             if latest_metric.cpu_usage > prev_metric.cpu_usage
-                            else "📉"
-                            if latest_metric.cpu_usage < prev_metric.cpu_usage
-                            else "➡️"
+                            else (
+                                "📉"
+                                if latest_metric.cpu_usage < prev_metric.cpu_usage
+                                else "➡️"
+                            )
                         )
                         mem_trend = (
                             "📈"
