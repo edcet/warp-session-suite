@@ -45,7 +45,7 @@ if [ ! -f "${ZSHRC}" ]; then
   touch "${ZSHRC}"
 fi
 if ! grep -Fq "${ACTIVATE}" "${ZSHRC}"; then
-  echo "${ACTIVATE}" >> "${ZSHRC}"
+  echo "${ACTIVATE}" >>"${ZSHRC}"
   echo "[warp-session-suite] Added mise activation to ${ZSHRC}." >&2
 fi
 

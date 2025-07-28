@@ -9,7 +9,7 @@ import os
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 # Add core plugin path
 sys.path.append(str(Path(__file__).parent.parent.parent))
@@ -122,7 +122,9 @@ class WindsurfPlugin(BasePlugin):
             }
         ]
 
-    def route_context(self, context_path: str, content_type: str = "auto") -> Dict[str, Any]:
+    def route_context(
+        self, context_path: str, content_type: str = "auto"
+    ) -> Dict[str, Any]:
         """Route context through Windsurf system."""
         routing_result = {
             "input_context": context_path,
@@ -204,7 +206,9 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="Windsurf Plugin CLI")
-    parser.add_argument("command", choices=["test", "route", "enhance"], help="Command to execute")
+    parser.add_argument(
+        "command", choices=["test", "route", "enhance"], help="Command to execute"
+    )
     parser.add_argument("--context", type=str, help="Context path for routing")
     parser.add_argument("--cmd", type=str, help="Command to enhance")
 
@@ -218,10 +222,14 @@ if __name__ == "__main__":
 
             if args.command == "test":
                 session_data = plugin.get_session_state()
-                print(f"📊 Windsurf Session Data:")
+                print("📊 Windsurf Session Data:")
                 print(f"  Active: {session_data.get('windsurf_active', False)}")
-                print(f"  Context Routes: {len(session_data.get('context_routes', []))}")
-                print(f"  Enhanced Commands: {len(session_data.get('enhanced_commands', []))}")
+                print(
+                    f"  Context Routes: {len(session_data.get('context_routes', []))}"
+                )
+                print(
+                    f"  Enhanced Commands: {len(session_data.get('enhanced_commands', []))}"
+                )
 
             elif args.command == "route":
                 context = args.context or "/workspace/test.py"

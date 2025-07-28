@@ -2,6 +2,7 @@
 """
 Convert sqlite-utils JSONL output to proper JSON schema format
 """
+
 import json
 import sys
 from pathlib import Path

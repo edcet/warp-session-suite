@@ -7,10 +7,14 @@ from pathlib import Path
 from typing import Optional
 
 import duckdb
-from rich import print
 
 DEFAULT_WARP_DB = (
-    Path.home() / "Library" / "Application Support" / "dev.warp.Warp" / "stores" / "main.sqlite"
+    Path.home()
+    / "Library"
+    / "Application Support"
+    / "dev.warp.Warp"
+    / "stores"
+    / "main.sqlite"
 )
 
 
@@ -30,7 +34,9 @@ class DuckDBConnector:
 
         # The in-memory DuckDB instance will attach the SQLite database virtually.
         self.con = duckdb.connect()
-        self.con.execute("ATTACH DATABASE ? AS warp (TYPE sqlite);", [str(self.sqlite_path)])
+        self.con.execute(
+            "ATTACH DATABASE ? AS warp (TYPE sqlite);", [str(self.sqlite_path)]
+        )
         # Set search path so tables can be referenced directly
         self.con.execute("SET search_path='warp';")
 

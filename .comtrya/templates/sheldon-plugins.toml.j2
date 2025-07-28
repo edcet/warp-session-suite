@@ -1,0 +1,103 @@
+# Sheldon Plugin Configuration for Mentat AI Assistant
+# Auto-generated via Comtrya - Advanced Shell Enhancement Layer
+
+[plugins]
+
+{% if enable_fzf %}
+[plugins.fzf]
+github = "junegunn/fzf"
+apply = ["defer"]
+
+[plugins.fzf-key-bindings]
+github = "junegunn/fzf" 
+dir = "shell"
+apply = ["defer"]
+{% endif %}
+
+{% if enable_zoxide %}
+[plugins.zoxide]
+github = "ajeetdsouza/zoxide"
+apply = ["defer"]
+use = ["zoxide.plugin.zsh"]
+{% endif %}
+
+{% if enable_starship %}
+[plugins.starship]
+github = "starship/starship"
+apply = ["defer"]
+{% endif %}
+
+# Development productivity plugins
+[plugins.git-extras]
+github = "tj/git-extras"
+apply = ["defer"]
+
+[plugins.zsh-autosuggestions]
+github = "zsh-users/zsh-autosuggestions"
+apply = ["defer"]
+
+[plugins.zsh-syntax-highlighting]
+github = "zsh-users/zsh-syntax-highlighting"
+apply = ["defer"]
+
+# Mentat-specific enhancements
+[plugins.mentat-completions]
+local = "~/.local/share/mentat/completions"
+apply = ["defer"]
+
+[plugins.mentat-aliases]
+inline = '''
+# Mentat AI Assistant aliases and functions
+alias mentat-setup="mentat-env bash ~/.mentat/setup.sh"
+alias mentat-format="mentat-env bash ~/.mentat/format.sh"
+alias mentat-doctor="~/.local/bin/mentat-doctor"
+alias mentat-env="~/.local/bin/mentat-env"
+
+# Proactive development aliases
+alias ll="ls -la"
+alias la="ls -A"
+alias l="ls -CF"
+
+# Git productivity enhancements
+alias gs="git status"
+alias ga="git add"
+alias gc="git commit"
+alias gp="git push"
+alias gl="git pull"
+alias gd="git diff"
+alias gb="git branch"
+alias gco="git checkout"
+
+# Intelligent directory navigation
+if command -v zoxide >/dev/null 2>&1; then
+    eval "$(zoxide init zsh)"
+    alias cd="z"
+fi
+
+# Enhanced development workflow
+function mentat-project-init() {
+    echo "🚀 Initializing Mentat-enhanced development environment..."
+    mentat-doctor
+    
+    if [[ -f .tool-versions ]]; then
+        echo "📦 Installing tools via mise..."
+        mise install
+    fi
+    
+    if [[ -f trunk.yaml ]] || [[ -f .trunk/trunk.yaml ]]; then
+        echo "🎨 Running initial formatting check..."
+        mentat-format
+    fi
+    
+    echo "✅ Project environment ready!"
+}
+
+# Proactive Git workflow
+function smart-commit() {
+    local message="${1:-chore: automated improvements}"
+    mentat-format
+    git add .
+    git commit -m "$message"
+    echo "🎉 Smart commit completed with formatting!"
+}
+'''

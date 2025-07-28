@@ -8,7 +8,7 @@ import json
 import os
 import sqlite3
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -35,7 +35,9 @@ class WarpSessionRecovery:
             path = Path(db_path).expanduser().resolve()
             # Ensure the path doesn't contain traversal attempts
             if ".." in str(path) or not str(path).startswith(str(Path.home())):
-                raise ValueError("Invalid database path - potential path traversal detected")
+                raise ValueError(
+                    "Invalid database path - potential path traversal detected"
+                )
             return path
 
         # Real Warp paths
@@ -204,12 +206,16 @@ class WarpSessionRecovery:
                 "total_commands": len(commands),
                 "total_blocks": len(blocks),
                 "total_ai_conversations": len(ai_conversations),
-                "total_windows": len(set(w["window_id"] for w in windows if w["window_id"])),
+                "total_windows": len(
+                    set(w["window_id"] for w in windows if w["window_id"])
+                ),
                 "total_projects": len(projects),
             },
         }
 
-    def create_recovery_script(self, session_data: Dict, output_file: str = "warp_recovery.sh"):
+    def create_recovery_script(
+        self, session_data: Dict, output_file: str = "warp_recovery.sh"
+    ):
         """Generate a shell script to recreate the session environment."""
         print(f"📝 Creating recovery script: {output_file}")
 
@@ -250,7 +256,9 @@ class WarpSessionRecovery:
 
         for cmd in session_data["commands"][:10]:  # Last 10 commands
             if cmd["working_directory"]:
-                script_lines.append(f"# {cmd['started_at']} in {cmd['working_directory']}")
+                script_lines.append(
+                    f"# {cmd['started_at']} in {cmd['working_directory']}"
+                )
             script_lines.append(f"# {cmd['command']}")
             if cmd["exit_code"] != 0:
                 script_lines.append(f"# ❌ Exit code: {cmd['exit_code']}")
@@ -284,7 +292,9 @@ class WarpSessionRecovery:
         Path(safe_output_file).chmod(0o755)
         print(f"✅ Recovery script created: {safe_output_file}")
 
-    def create_obsidian_export(self, session_data: Dict, output_dir: str = "obsidian_export"):
+    def create_obsidian_export(
+        self, session_data: Dict, output_dir: str = "obsidian_export"
+    ):
         """Create Obsidian-compatible markdown files."""
         # Secure the output directory path to prevent path traversal
         safe_output_dir = os.path.join(os.getcwd(), os.path.basename(output_dir))
@@ -337,7 +347,7 @@ class WarpSessionRecovery:
                         cmd["command"],
                         "```",
                         "",
-                        f"Exit code: {'✅ 0' if cmd['exit_code'] == 0 else f'❌ {cmd['exit_code']}'}",
+                        f"Exit code: {'✅ 0' if cmd['exit_code'] == 0 else f'❌ {cmd["exit_code"]}'}",
                         "",
                     ]
                 )
@@ -365,10 +375,10 @@ class WarpSessionRecovery:
                     session_note.extend(
                         [
                             "**Response**:",
-                            f"```",
+                            "```",
                             conv["ai_response"][:500]
                             + ("..." if len(conv["ai_response"]) > 500 else ""),
-                            f"```",
+                            "```",
                             "",
                         ]
                     )
@@ -383,7 +393,9 @@ class WarpSessionRecovery:
             )
             for project in session_data["projects"]:
                 # Secure path handling to prevent path traversal
-                safe_project_name = os.path.basename(os.path.normpath(project["project_path"]))
+                safe_project_name = os.path.basename(
+                    os.path.normpath(project["project_path"])
+                )
                 session_note.extend(
                     [
                         f"### [[{safe_project_name}]]",
@@ -425,11 +437,11 @@ def main():
         print(
             f"""
 📈 Session Summary:
-   Commands: {stats['total_commands']}
-   Blocks: {stats['total_blocks']}
-   AI Conversations: {stats['total_ai_conversations']}
-   Windows: {stats['total_windows']}
-   Projects: {stats['total_projects']}
+   Commands: {stats["total_commands"]}
+   Blocks: {stats["total_blocks"]}
+   AI Conversations: {stats["total_ai_conversations"]}
+   Windows: {stats["total_windows"]}
+   Projects: {stats["total_projects"]}
         """
         )
 

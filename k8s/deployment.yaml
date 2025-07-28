@@ -14,32 +14,32 @@ spec:
         app: unified-automation
     spec:
       containers:
-      - env:
-        - name: MISE_EXPERIMENTAL
-          value: '1'
-        - name: PLUGIN_DIR
-          value: /app/plugins
-        image: unified-terminal-automation:latest
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8080
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        name: app
-        ports:
-        - containerPort: 8080
-        - containerPort: 8443
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: 8080
-          initialDelaySeconds: 5
-          periodSeconds: 5
-        resources:
-          limits:
-            cpu: 500m
-            memory: 1Gi
-          requests:
-            cpu: 100m
-            memory: 256Mi
+        - env:
+            - name: MISE_EXPERIMENTAL
+              value: '1'
+            - name: PLUGIN_DIR
+              value: /app/plugins
+          image: unified-terminal-automation:latest
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          name: app
+          ports:
+            - containerPort: 8080
+            - containerPort: 8443
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          resources:
+            limits:
+              cpu: 500m
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 256Mi

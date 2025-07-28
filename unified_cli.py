@@ -7,11 +7,10 @@ Entry point for all tool integrations and AI-powered automation.
 import argparse
 import json
 import logging
-import os
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 # Configure logging
 logging.basicConfig(
@@ -48,7 +47,9 @@ class UnifiedCLI:
 
             print(f"  {name:15} - {info.get('name', 'No description')}")
             print(f"  {'':15}   Status: {status}")
-            print(f"  {'':15}   Capabilities: {', '.join(info.get('capabilities', []))}")
+            print(
+                f"  {'':15}   Capabilities: {', '.join(info.get('capabilities', []))}"
+            )
             print()
 
     def run_warp_command(self, args: List[str]) -> None:
@@ -68,7 +69,9 @@ class UnifiedCLI:
             print(f"🔄 Running Warp session recovery for last {hours} hours...")
 
             # Use existing recovery tool with enhanced integration
-            result = subprocess.run([sys.executable, "warp_session_recovery.py"], cwd=self.base_dir)
+            result = subprocess.run(
+                [sys.executable, "warp_session_recovery.py"], cwd=self.base_dir
+            )
 
             if result.returncode == 0:
                 print("✅ Warp session recovery completed successfully!")
@@ -154,12 +157,16 @@ class UnifiedCLI:
                 # Most used commands
                 cmd_freq = {}
                 for cmd in commands:
-                    base_cmd = cmd.get("command", "").split()[0] if cmd.get("command") else ""
+                    base_cmd = (
+                        cmd.get("command", "").split()[0] if cmd.get("command") else ""
+                    )
                     if base_cmd:
                         cmd_freq[base_cmd] = cmd_freq.get(base_cmd, 0) + 1
 
                 print("\n🔥 Top Commands:")
-                for cmd, count in sorted(cmd_freq.items(), key=lambda x: x[1], reverse=True)[:10]:
+                for cmd, count in sorted(
+                    cmd_freq.items(), key=lambda x: x[1], reverse=True
+                )[:10]:
                     print(f"    {cmd:20} {count:3} times")
 
         except Exception as e:
@@ -246,7 +253,9 @@ Examples:
             help="Command to execute (warp, ai, system, plugins)",
         )
         parser.add_argument("args", nargs="*", help="Command arguments")
-        parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose logging")
+        parser.add_argument(
+            "--verbose", "-v", action="store_true", help="Enable verbose logging"
+        )
 
         args = parser.parse_args()
 
