@@ -4,51 +4,51 @@ networks:
 services:
   monitoring:
     environment:
-    - GF_SECURITY_ADMIN_PASSWORD=admin123
-    - GF_INSTALL_PLUGINS=grafana-piechart-panel
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
     image: grafana/grafana:latest
     ports:
-    - 3000:3000
+      - 3000:3000
     restart: unless-stopped
     volumes:
-    - grafana-data:/var/lib/grafana
+      - grafana-data:/var/lib/grafana
   postgres:
     environment:
-    - POSTGRES_DB=unified_automation
-    - POSTGRES_USER=automation
-    - POSTGRES_PASSWORD=secure_password
+      - POSTGRES_DB=unified_automation
+      - POSTGRES_USER=automation
+      - POSTGRES_PASSWORD=secure_password
     image: postgres:16-alpine
     ports:
-    - 5432:5432
+      - 5432:5432
     restart: unless-stopped
     volumes:
-    - postgres-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
   redis:
     image: redis:7-alpine
     ports:
-    - 6379:6379
+      - 6379:6379
     restart: unless-stopped
     volumes:
-    - redis-data:/data
+      - redis-data:/data
   unified-automation:
     build:
       context: .
       dockerfile: Dockerfile
     depends_on:
-    - redis
-    - postgres
+      - redis
+      - postgres
     environment:
-    - MISE_EXPERIMENTAL=1
-    - UNIFIED_AUTOMATION_HOME=/app
-    - PLUGIN_DIR=/app/plugins
+      - MISE_EXPERIMENTAL=1
+      - UNIFIED_AUTOMATION_HOME=/app
+      - PLUGIN_DIR=/app/plugins
     ports:
-    - 8080:8080
-    - 8443:8443
+      - 8080:8080
+      - 8443:8443
     restart: unless-stopped
     volumes:
-    - .:/app
-    - automation-data:/app/data
-    - /var/run/docker.sock:/var/run/docker.sock
+      - .:/app
+      - automation-data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
 version: '3.8'
 volumes:
   automation-data: null

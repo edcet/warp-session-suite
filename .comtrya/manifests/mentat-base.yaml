@@ -1,0 +1,39 @@
+manifests:
+  - name: mentat-base-tools
+    description: "Mentat AI Assistant - Base Development Tools"
+    actions:
+      # Mise tool version manager
+      - action: command.run
+        command: |
+          if ! command -v mise >/dev/null 2>&1; then
+            curl https://mise.run | sh
+            export PATH="$HOME/.local/bin:$PATH"
+          fi
+      # Install tools from .tool-versions via mise
+      - action: command.run
+        command: mise install
+        directory: "{{ env.PWD }}"
+      # Python development stack
+      - action: command.run
+        command: |
+          # Use mise python, fall back to system python
+          PYTHON_CMD=$(mise which python 2>/dev/null || which python3 || which python)
+          $PYTHON_CMD -m pip install --user --upgrade pip setuptools wheel
+
+          # Install from pyproject.toml if available
+          if [[ -f pyproject.toml ]]; then
+            $PYTHON_CMD -m pip install --user "typer[all]>=0.9" "duckdb>=1.1.3" "rich>=13.7"
+          fi
+
+          # Code quality tools
+          $PYTHON_CMD -m pip install --user black isort ruff mypy pylint bandit
+      # Trunk CLI for unified linting/formatting
+      - action: command.run
+        command: |
+          if ! command -v trunk >/dev/null 2>&1; then
+            curl -fsSL https://trunk.io/releases/latest/trunk | bash -s -- -b /usr/local/bin
+          fi
+          trunk --version || echo "Trunk installation verification failed"
+    conditions:
+      - action: command.run
+        command: echo "Installing base tools for platform $(uname -s)/$(uname -m)"

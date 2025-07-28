@@ -10,7 +10,6 @@ pre-commit:
       run: python3 {staged_files} test
     security-scan:
       run: trunk check --filter=bandit,gitleaks,trufflehog
-      
 pre-push:
   parallel: true
   commands:
@@ -20,7 +19,6 @@ pre-push:
       run: python3 unified_cli.py system status
     advanced-automation-test:
       run: python3 advanced_automation.py
-      
 commit-msg:
   commands:
     conventional-commits:
