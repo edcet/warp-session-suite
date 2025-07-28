@@ -37,9 +37,9 @@ jobs:
         - windsurf
         - pearai
         - trae
-        - ai
         - analytics
         - code_quality
+        - cicd
     steps:
     - uses: actions/checkout@v4
     - name: Setup Python
@@ -47,7 +47,12 @@ jobs:
       with:
         python-version: ${{ env.PYTHON_VERSION }}
     - name: Test plugin
-      run: python3 plugins/${{ matrix.plugin }}/src/main.py test
+      run: |
+        if [ "${{ matrix.plugin }}" = "ai" ]; then
+          python3 plugins/ai/tgpt/integration.py test
+        else
+          python3 plugins/${{ matrix.plugin }}/src/main.py test
+        fi
   system-integration:
     runs-on: ubuntu-latest
     needs:

@@ -4,14 +4,14 @@ Unified Terminal Automation System - Main CLI Interface
 Entry point for all tool integrations and AI-powered automation.
 """
 
-import os
-import sys
-import json
 import argparse
-import subprocess
+import json
 import logging
+import os
+import subprocess
+import sys
 from pathlib import Path
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 # Configure logging
 logging.basicConfig(

@@ -7,16 +7,16 @@ Integrates with existing warp_session_recovery.py functionality
 import json
 import os
 import sys
-from pathlib import Path
-from typing import Optional, Dict, List, Any
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 # Add parent directory to path to import existing warp functionality
 sys.path.append(str(Path(__file__).parent.parent.parent.parent))
 
 try:
-    from warp_session_recovery import WarpSessionRecovery
     from plugins.core.session.base_plugin import BasePlugin
+    from warp_session_recovery import WarpSessionRecovery
 except ImportError as e:
     print(f"Import error: {e}")
 

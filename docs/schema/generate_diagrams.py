@@ -22,10 +22,10 @@ Those artefacts are referenced by MkDocs and other documentation tooling.
 """
 from __future__ import annotations
 
-import subprocess
 import shutil
-from pathlib import Path
+import subprocess
 import sys
+from pathlib import Path
 
 # ---------------------------------------------------------------------------
 # Paths

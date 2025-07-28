@@ -6,11 +6,11 @@ Provides AI assistance, code generation, and session synchronization
 
 import json
 import os
-import sys
 import subprocess
-from pathlib import Path
-from typing import Optional, Dict, List, Any
+import sys
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 # Add core plugin path
 sys.path.append(str(Path(__file__).parent.parent.parent))

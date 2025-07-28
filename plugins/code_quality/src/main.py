@@ -6,11 +6,11 @@ Integrates trunk, lefthook, formatters, parsers, and linters for comprehensive c
 
 import json
 import os
-import sys
 import subprocess
-from pathlib import Path
-from typing import Optional, Dict, List, Any
+import sys
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 # Add core plugin path
 sys.path.append(str(Path(__file__).parent.parent.parent))
@@ -146,7 +146,7 @@ runtimes:
         # Create lefthook configuration
         lefthook_config = self.base_dir / "lefthook.yml"
         if not lefthook_config.exists():
-            lefthook_config_content = """# Lefthook configuration for Unified Terminal Automation System
+            lefthook_config_content = r"""# Lefthook configuration for Unified Terminal Automation System
 pre-commit:
   parallel: true
   commands:

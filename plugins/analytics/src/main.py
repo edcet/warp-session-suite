@@ -6,13 +6,13 @@ Provides comprehensive system monitoring, performance analysis, and predictive i
 
 import json
 import os
+import sqlite3
 import sys
 import time
-import sqlite3
-from pathlib import Path
-from typing import Optional, Dict, List, Any
+from collections import Counter, defaultdict
 from datetime import datetime, timedelta
-from collections import defaultdict, Counter
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 # Add core plugin path
 sys.path.append(str(Path(__file__).parent.parent.parent))

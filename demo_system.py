@@ -4,11 +4,11 @@ Unified Terminal Automation System - Complete Demonstration
 Showcases the full integration of Warp, Cursor, Windsurf, and AI automation
 """
 
+import json
 import subprocess
 import sys
-import json
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 
 def run_command(cmd, description):

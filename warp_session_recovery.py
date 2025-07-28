@@ -8,9 +8,9 @@ import json
 import os
 import sqlite3
 import sys
-from pathlib import Path
-from typing import Optional, Dict, List
 from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Dict, List, Optional
 
 try:
     import pandas as pd

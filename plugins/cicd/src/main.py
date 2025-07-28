@@ -6,12 +6,13 @@ Advanced continuous integration and deployment orchestration with multi-platform
 
 import json
 import os
-import sys
 import subprocess
-import yaml
-from pathlib import Path
-from typing import Optional, Dict, List, Any
+import sys
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import yaml
 
 # Add core plugin path
 sys.path.append(str(Path(__file__).parent.parent.parent))
@@ -212,7 +213,7 @@ class CICDPlugin(BasePlugin):
                                 "if": "always()",
                                 "with": {
                                     "name": "test-results",
-                                    "path": "automation_results_*.json\nultimate_system_report_*.md\nanalytics_report_*.md"
+                                    "path": "automation_results_*.json\nultimate_system_report_*.md\nanalytics_report_*.md",
                                 },
                             },
                         ],
@@ -284,7 +285,7 @@ class CICDPlugin(BasePlugin):
                             {"uses": "actions/checkout@v4"},
                             {
                                 "name": "Deploy to Kubernetes",
-                                "run": "echo \"Deploying to ${{ github.event.inputs.environment || 'staging' }}\"\nkubectl apply -f k8s/\nkubectl set image deployment/unified-automation app=unified-terminal-automation:${{ github.sha }}"
+                                "run": "echo \"Deploying to ${{ github.event.inputs.environment || 'staging' }}\"\nkubectl apply -f k8s/\nkubectl set image deployment/unified-automation app=unified-terminal-automation:${{ github.sha }}",
                             },
                         ],
                     },
@@ -380,7 +381,7 @@ class CICDPlugin(BasePlugin):
         """Create Jenkinsfile for Jenkins CI/CD."""
         jenkinsfile = self.base_dir / "Jenkinsfile"
         if not jenkinsfile.exists():
-            jenkins_config = '''pipeline {
+            jenkins_config = """pipeline {
     agent any
     
     environment {
@@ -516,7 +517,7 @@ class CICDPlugin(BasePlugin):
             )
         }
     }
-}'''
+}"""
             with open(jenkinsfile, "w") as f:
                 f.write(jenkins_config)
 
@@ -525,7 +526,7 @@ class CICDPlugin(BasePlugin):
         # Enhanced Dockerfile
         dockerfile = self.base_dir / "Dockerfile"
         if not dockerfile.exists():
-            dockerfile_content = '''# Multi-stage Dockerfile for Unified Terminal Automation System
+            dockerfile_content = """# Multi-stage Dockerfile for Unified Terminal Automation System
 FROM ubuntu:22.04 as base
 
 # Install system dependencies
@@ -573,7 +574,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \\
 CMD ["python3", "unified_cli.py", "system", "monitor"]
 
 EXPOSE 8080 8443
-'''
+"""
             with open(dockerfile, "w") as f:
                 f.write(dockerfile_content)
 
@@ -741,9 +742,7 @@ EXPOSE 8080 8443
             "plugin_version": self.version,
             "capabilities": self.capabilities,
             "ci_platforms": self.ci_platforms,
-            "available_platforms": len(
-                [p for p in self.ci_platforms.values() if p["available"]]
-            ),
+            "available_platforms": len([p for p in self.ci_platforms.values() if p["available"]]),
             "total_platforms": len(self.ci_platforms),
             "session_timestamp": datetime.now().isoformat(),
         }
@@ -809,9 +808,7 @@ EXPOSE 8080 8443
                 trigger_result.update({"success": False, "error": str(e)})
 
         else:
-            trigger_result.update(
-                {"success": False, "error": f"Platform {platform} not supported"}
-            )
+            trigger_result.update({"success": False, "error": f"Platform {platform} not supported"})
 
         return trigger_result
 
@@ -883,7 +880,15 @@ EXPOSE 8080 8443
         if platform == "github_actions":
             try:
                 result = subprocess.run(
-                    ["gh", "run", "list", "--limit", "10", "--json", "status,conclusion,workflowName"],
+                    [
+                        "gh",
+                        "run",
+                        "list",
+                        "--limit",
+                        "10",
+                        "--json",
+                        "status,conclusion,workflowName",
+                    ],
                     capture_output=True,
                     text=True,
                     timeout=30,
@@ -900,9 +905,7 @@ EXPOSE 8080 8443
                         }
                     )
                 else:
-                    status_result.update(
-                        {"success": False, "error": result.stderr}
-                    )
+                    status_result.update({"success": False, "error": result.stderr})
 
             except Exception as e:
                 status_result.update({"success": False, "error": str(e)})
@@ -932,9 +935,7 @@ if __name__ == "__main__":
     )
     parser.add_argument("--platform", type=str, help="CI/CD platform")
     parser.add_argument("--branch", type=str, default="main", help="Git branch")
-    parser.add_argument(
-        "--environment", type=str, default="staging", help="Deployment environment"
-    )
+    parser.add_argument("--environment", type=str, default="staging", help="Deployment environment")
 
     args = parser.parse_args()
 

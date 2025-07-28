@@ -3,10 +3,10 @@ Unified Terminal Automation System - Plugin Architecture
 Modular plugin system for Warp, Cursor, Windsurf, PearAI, and other terminal tools.
 """
 
-from pathlib import Path
 import json
 import logging
-from typing import Dict, Any, List, Optional
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
