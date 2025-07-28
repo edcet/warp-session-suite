@@ -5,16 +5,22 @@
 echo "📦 Installing project dependencies..."
 
 # Install the Python project in development mode
-pip3 install -e .
+if ! pip3 install -e .; then
+    echo "❌ Error: Failed to install project in development mode"
+    exit 1
+fi
 
 # Install additional Python tools needed by mise tasks and CI
-pip3 install \
+if ! pip3 install \
     sqlite-utils \
     PyYAML \
     black \
     isort \
     ruff \
     mkdocs \
-    mkdocs-material
+    mkdocs-material; then
+    echo "❌ Error: Failed to install additional Python tools"
+    exit 1
+fi
 
 echo "✅ Setup completed successfully!"

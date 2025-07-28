@@ -3,6 +3,14 @@
 
 echo "🎨 Running automatic code formatting..."
 
+# Check for required Python tools
+for tool in black isort ruff; do
+    if ! python3 -c "import $tool" 2>/dev/null; then
+        echo "❌ $tool is not installed. Please run .mentat/setup.sh first."
+        exit 1
+    fi
+done
+
 # Format Python code with Black
 echo "🐍 Formatting Python code with Black..."
 python3 -m black --line-length 100 --quiet .
