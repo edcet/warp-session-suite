@@ -6,12 +6,11 @@ Sophisticated multi-plugin orchestration and intelligent workflow automation
 
 import json
 import subprocess
-import sys
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 
 class AdvancedAutomation:
@@ -55,7 +54,11 @@ class AdvancedAutomation:
             """Run a single plugin test."""
             try:
                 result = subprocess.run(
-                    command, capture_output=True, text=True, timeout=30, cwd=self.base_dir
+                    command,
+                    capture_output=True,
+                    text=True,
+                    timeout=30,
+                    cwd=self.base_dir,
                 )
                 return {
                     "plugin": plugin_name,
@@ -95,7 +98,9 @@ class AdvancedAutomation:
                     result = future.result()
                     test_results[plugin_name] = result
                     status = "✅" if result["success"] else "❌"
-                    print(f"{status} {plugin_name}: {'PASSED' if result['success'] else 'FAILED'}")
+                    print(
+                        f"{status} {plugin_name}: {'PASSED' if result['success'] else 'FAILED'}"
+                    )
                 except Exception as e:
                     test_results[plugin_name] = {
                         "plugin": plugin_name,
@@ -123,7 +128,7 @@ class AdvancedAutomation:
             "results": test_results,
         }
 
-        print(f"\n📊 Test Summary:")
+        print("\n📊 Test Summary:")
         print(f"  Total: {total} | Passed: {passed} | Failed: {total - passed}")
         print(f"  Success Rate: {success_rate:.1f}%")
         print(
@@ -157,7 +162,9 @@ class AdvancedAutomation:
                     "success": health_status,
                     "duration": 2.1,
                     "output": (
-                        "System health verified" if health_status else "Health issues detected"
+                        "System health verified"
+                        if health_status
+                        else "Health issues detected"
                     ),
                 }
             )
@@ -166,7 +173,12 @@ class AdvancedAutomation:
             )
         except Exception as e:
             workflow_steps.append(
-                {"step": "health_check", "success": False, "duration": 0.0, "output": str(e)}
+                {
+                    "step": "health_check",
+                    "success": False,
+                    "duration": 0.0,
+                    "output": str(e),
+                }
             )
             print(f"   ❌ Health Check: EXCEPTION - {e}")
 
@@ -186,7 +198,9 @@ class AdvancedAutomation:
                     "step": "warp_analysis",
                     "success": warp_analysis,
                     "duration": 1.8,
-                    "output": "Warp patterns analyzed" if warp_analysis else "Analysis failed",
+                    "output": "Warp patterns analyzed"
+                    if warp_analysis
+                    else "Analysis failed",
                 }
             )
             print(
@@ -194,7 +208,12 @@ class AdvancedAutomation:
             )
         except Exception as e:
             workflow_steps.append(
-                {"step": "warp_analysis", "success": False, "duration": 0.0, "output": str(e)}
+                {
+                    "step": "warp_analysis",
+                    "success": False,
+                    "duration": 0.0,
+                    "output": str(e),
+                }
             )
             print(f"   ❌ Warp Analysis: EXCEPTION - {e}")
 
@@ -223,7 +242,9 @@ class AdvancedAutomation:
                     "success": ai_generation,
                     "duration": 3.2,
                     "output": (
-                        "Code generated successfully" if ai_generation else "Generation failed"
+                        "Code generated successfully"
+                        if ai_generation
+                        else "Generation failed"
                     ),
                 }
             )
@@ -232,7 +253,12 @@ class AdvancedAutomation:
             )
         except Exception as e:
             workflow_steps.append(
-                {"step": "ai_generation", "success": False, "duration": 0.0, "output": str(e)}
+                {
+                    "step": "ai_generation",
+                    "success": False,
+                    "duration": 0.0,
+                    "output": str(e),
+                }
             )
             print(f"   ❌ AI Generation: EXCEPTION - {e}")
 
@@ -289,7 +315,9 @@ class AdvancedAutomation:
                     "step": "recovery_validation",
                     "success": recovery_validation,
                     "duration": 4.1,
-                    "output": "Recovery validated" if recovery_validation else "Validation failed",
+                    "output": "Recovery validated"
+                    if recovery_validation
+                    else "Validation failed",
                 }
             )
             print(
@@ -297,7 +325,12 @@ class AdvancedAutomation:
             )
         except Exception as e:
             workflow_steps.append(
-                {"step": "recovery_validation", "success": False, "duration": 0.0, "output": str(e)}
+                {
+                    "step": "recovery_validation",
+                    "success": False,
+                    "duration": 0.0,
+                    "output": str(e),
+                }
             )
             print(f"   ❌ Recovery: EXCEPTION - {e}")
 
@@ -315,7 +348,7 @@ class AdvancedAutomation:
             "timestamp": datetime.now().isoformat(),
         }
 
-        print(f"\n🎯 Workflow Summary:")
+        print("\n🎯 Workflow Summary:")
         print(f"  Steps: {len(workflow_steps)} | Successful: {successful_steps}")
         print(f"  Success Rate: {workflow_success_rate:.1f}%")
         print(f"  Total Duration: {total_workflow_time:.2f}s")
@@ -345,11 +378,18 @@ class AdvancedAutomation:
                     cwd=self.base_dir,
                 )
                 init_time = time.time() - start_time
-                init_times[plugin] = {"time_seconds": init_time, "success": result.returncode == 0}
+                init_times[plugin] = {
+                    "time_seconds": init_time,
+                    "success": result.returncode == 0,
+                }
                 status = "✅" if result.returncode == 0 else "❌"
                 print(f"   {status} {plugin}: {init_time:.3f}s")
             except Exception as e:
-                init_times[plugin] = {"time_seconds": 10.0, "success": False, "error": str(e)}
+                init_times[plugin] = {
+                    "time_seconds": 10.0,
+                    "success": False,
+                    "error": str(e),
+                }
                 print(f"   ❌ {plugin}: TIMEOUT/ERROR")
 
         benchmarks["plugin_initialization"] = init_times
@@ -367,10 +407,14 @@ class AdvancedAutomation:
             start_time = time.time()
             try:
                 result = subprocess.run(
-                    command, capture_output=True, text=True, timeout=5, cwd=self.base_dir
+                    command,
+                    capture_output=True,
+                    text=True,
+                    timeout=5,
+                    cwd=self.base_dir,
                 )
                 response_time = time.time() - start_time
-                cli_times[f"command_{i+1}"] = {
+                cli_times[f"command_{i + 1}"] = {
                     "command": " ".join(command),
                     "time_seconds": response_time,
                     "success": result.returncode == 0,
@@ -378,7 +422,7 @@ class AdvancedAutomation:
                 status = "✅" if result.returncode == 0 else "❌"
                 print(f"   {status} {' '.join(command[-2:])}: {response_time:.3f}s")
             except Exception as e:
-                cli_times[f"command_{i+1}"] = {
+                cli_times[f"command_{i + 1}"] = {
                     "command": " ".join(command),
                     "time_seconds": 5.0,
                     "success": False,
@@ -429,7 +473,9 @@ class AdvancedAutomation:
                     concurrent_results.append(False)
 
         concurrent_time = time.time() - concurrent_start
-        concurrent_success_rate = (sum(concurrent_results) / len(concurrent_results)) * 100
+        concurrent_success_rate = (
+            sum(concurrent_results) / len(concurrent_results)
+        ) * 100
 
         benchmarks["concurrent_operations"] = {
             "total_time_seconds": concurrent_time,
@@ -458,7 +504,7 @@ class AdvancedAutomation:
             "timestamp": datetime.now().isoformat(),
         }
 
-        print(f"\n⚡ Benchmark Summary:")
+        print("\n⚡ Benchmark Summary:")
         print(f"  Total Benchmark Time: {total_benchmark_time:.2f}s")
         print(
             f"  Plugin Init Avg: {sum(t.get('time_seconds', 0) for t in init_times.values()) / len(init_times):.3f}s"
@@ -491,7 +537,9 @@ class AdvancedAutomation:
 
         validation_results["plugin_ecosystem"] = {
             "total_plugins": len(plugins),
-            "active_plugins": sum(1 for p in plugin_validation.values() if p["entry_exists"]),
+            "active_plugins": sum(
+                1 for p in plugin_validation.values() if p["entry_exists"]
+            ),
             "plugins": plugin_validation,
         }
 
@@ -512,14 +560,21 @@ class AdvancedAutomation:
         functional_tests = [
             ("unified_cli_help", ["python3", "unified_cli.py", "--help"]),
             ("plugin_listing", ["python3", "unified_cli.py", "plugins"]),
-            ("warp_plugin_test", ["python3", "plugins/warp/src/main.py", "test", "--hours", "1"]),
+            (
+                "warp_plugin_test",
+                ["python3", "plugins/warp/src/main.py", "test", "--hours", "1"],
+            ),
         ]
 
         functional_results = {}
         for test_name, command in functional_tests:
             try:
                 result = subprocess.run(
-                    command, capture_output=True, text=True, timeout=10, cwd=self.base_dir
+                    command,
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
+                    cwd=self.base_dir,
                 )
                 functional_results[test_name] = {
                     "success": result.returncode == 0,
@@ -556,11 +611,13 @@ class AdvancedAutomation:
         ) * 100
 
         config_score = (
-            sum(1 for c in config_validation.values() if c["exists"]) / len(config_validation)
+            sum(1 for c in config_validation.values() if c["exists"])
+            / len(config_validation)
         ) * 100
 
         functional_score = (
-            sum(1 for f in functional_results.values() if f["success"]) / len(functional_results)
+            sum(1 for f in functional_results.values() if f["success"])
+            / len(functional_results)
         ) * 100
 
         overall_score = (plugin_score + config_score + functional_score) / 3
@@ -568,7 +625,7 @@ class AdvancedAutomation:
         validation_results["system_health_score"] = overall_score
         validation_results["timestamp"] = datetime.now().isoformat()
 
-        print(f"📊 Validation Results:")
+        print("📊 Validation Results:")
         print(f"  Plugin Ecosystem: {plugin_score:.1f}%")
         print(f"  Configuration: {config_score:.1f}%")
         print(f"  Functional Tests: {functional_score:.1f}%")
@@ -576,7 +633,9 @@ class AdvancedAutomation:
 
         return validation_results
 
-    def save_automation_results(self, results: Dict[str, Any], filename: str = None) -> str:
+    def save_automation_results(
+        self, results: Dict[str, Any], filename: str = None
+    ) -> str:
         """Save automation results to file."""
         if not filename:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")

@@ -4,12 +4,10 @@ Warp Terminal Plugin for Unified Terminal Automation System
 Integrates with existing warp_session_recovery.py functionality
 """
 
-import json
-import os
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 # Add parent directory to path to import existing warp functionality
 sys.path.append(str(Path(__file__).parent.parent.parent.parent))
@@ -131,7 +129,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "command", choices=["test", "recover", "analyze"], help="Command to execute"
     )
-    parser.add_argument("--hours", type=int, default=24, help="Hours of history to process")
+    parser.add_argument(
+        "--hours", type=int, default=24, help="Hours of history to process"
+    )
 
     args = parser.parse_args()
 

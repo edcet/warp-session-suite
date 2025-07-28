@@ -20,6 +20,7 @@ Artefacts are written to:
 
 Those artefacts are referenced by MkDocs and other documentation tooling.
 """
+
 from __future__ import annotations
 
 import shutil
@@ -44,7 +45,9 @@ MERMAID_OUT = IMG_DIR / "schema.mmd"
 def run(cmd: list[str], description: str) -> None:
     """Helper executing a command while printing understandable status."""
     print(f"📡 Running {description} ...", flush=True)
-    result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    result = subprocess.run(
+        cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+    )
     if result.returncode != 0:
         print(result.stdout)
         print(result.stderr, file=sys.stderr)
@@ -54,7 +57,9 @@ def run(cmd: list[str], description: str) -> None:
 
 def ensure_prerequisites() -> None:
     if not SCHEMA_JSON.exists():
-        raise SystemExit(f"❌ Expected schema JSON at {SCHEMA_JSON} – run the extraction first.")
+        raise SystemExit(
+            f"❌ Expected schema JSON at {SCHEMA_JSON} – run the extraction first."
+        )
     if shutil.which("schemadiagram") is None:
         raise SystemExit(
             "❌ 'schemadiagram' CLI not found on $PATH. Install it with\n"

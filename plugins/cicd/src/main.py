@@ -5,12 +5,11 @@ Advanced continuous integration and deployment orchestration with multi-platform
 """
 
 import json
-import os
 import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 try:
     import yaml
@@ -65,7 +64,8 @@ class CICDPlugin(BasePlugin):
         self.ci_platforms["github_actions"] = {
             "available": github_workflows.exists(),
             "workflows": (
-                list(github_workflows.glob("*.yml")) + list(github_workflows.glob("*.yaml"))
+                list(github_workflows.glob("*.yml"))
+                + list(github_workflows.glob("*.yaml"))
                 if github_workflows.exists()
                 else []
             ),
@@ -365,7 +365,10 @@ class CICDPlugin(BasePlugin):
                 "deploy_staging": {
                     "stage": "deploy",
                     "script": ["kubectl apply -f k8s/staging/"],
-                    "environment": {"name": "staging", "url": "https://staging.example.com"},
+                    "environment": {
+                        "name": "staging",
+                        "url": "https://staging.example.com",
+                    },
                     "only": ["develop"],
                 },
                 "deploy_production": {
@@ -748,7 +751,9 @@ EXPOSE 8080 8443
             "plugin_version": self.version,
             "capabilities": self.capabilities,
             "ci_platforms": self.ci_platforms,
-            "available_platforms": len([p for p in self.ci_platforms.values() if p["available"]]),
+            "available_platforms": len(
+                [p for p in self.ci_platforms.values() if p["available"]]
+            ),
             "total_platforms": len(self.ci_platforms),
             "session_timestamp": datetime.now().isoformat(),
         }
@@ -814,7 +819,9 @@ EXPOSE 8080 8443
                 trigger_result.update({"success": False, "error": str(e)})
 
         else:
-            trigger_result.update({"success": False, "error": f"Platform {platform} not supported"})
+            trigger_result.update(
+                {"success": False, "error": f"Platform {platform} not supported"}
+            )
 
         return trigger_result
 
@@ -941,7 +948,9 @@ if __name__ == "__main__":
     )
     parser.add_argument("--platform", type=str, help="CI/CD platform")
     parser.add_argument("--branch", type=str, default="main", help="Git branch")
-    parser.add_argument("--environment", type=str, default="staging", help="Deployment environment")
+    parser.add_argument(
+        "--environment", type=str, default="staging", help="Deployment environment"
+    )
 
     args = parser.parse_args()
 
@@ -953,7 +962,7 @@ if __name__ == "__main__":
 
             if args.command == "test":
                 session_data = plugin.get_session_state()
-                print(f"📊 CI/CD Session Data:")
+                print("📊 CI/CD Session Data:")
                 print(
                     f"  Available Platforms: {session_data.get('available_platforms', 0)}/{session_data.get('total_platforms', 0)}"
                 )
@@ -976,7 +985,9 @@ if __name__ == "__main__":
                 if result["success"]:
                     print("✅ Pipeline triggered successfully")
                 else:
-                    print(f"❌ Pipeline trigger failed: {result.get('error', 'Unknown error')}")
+                    print(
+                        f"❌ Pipeline trigger failed: {result.get('error', 'Unknown error')}"
+                    )
 
             elif args.command == "deploy":
                 print(f"🚀 Deploying to {args.environment}...")
@@ -984,7 +995,9 @@ if __name__ == "__main__":
                 if result["success"]:
                     print("✅ Deployment successful")
                 else:
-                    print(f"❌ Deployment failed: {result.get('error', 'Unknown error')}")
+                    print(
+                        f"❌ Deployment failed: {result.get('error', 'Unknown error')}"
+                    )
 
             elif args.command == "status":
                 if not args.platform:
@@ -996,7 +1009,9 @@ if __name__ == "__main__":
                 if result["success"]:
                     print(f"Latest status: {result.get('latest_status', 'unknown')}")
                 else:
-                    print(f"❌ Status check failed: {result.get('error', 'Unknown error')}")
+                    print(
+                        f"❌ Status check failed: {result.get('error', 'Unknown error')}"
+                    )
 
             plugin.cleanup()
             print("✅ All operations completed successfully!")

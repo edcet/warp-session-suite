@@ -29,13 +29,16 @@ def find_warp_database() -> Path:
     lib_support = Path.home() / "Library" / "Application Support"
     if lib_support.exists():
         for sqlite_file in lib_support.rglob("*.sqlite"):
-            if "warp" in sqlite_file.name.lower() or "warp" in str(sqlite_file.parent).lower():
+            if (
+                "warp" in sqlite_file.name.lower()
+                or "warp" in str(sqlite_file.parent).lower()
+            ):
                 return sqlite_file
 
     raise FileNotFoundError(
-        f"Could not find Warp database. Searched paths:\n"
+        "Could not find Warp database. Searched paths:\n"
         + "\n".join(f"  - {p}" for p in WARP_DB_PATHS)
-        + f"\n\nMake sure Warp Terminal is installed and has been used."
+        + "\n\nMake sure Warp Terminal is installed and has been used."
     )
 
 

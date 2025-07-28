@@ -6,8 +6,6 @@ Showcases all advanced capabilities in a comprehensive live demo
 
 import json
 import subprocess
-import sys
-import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
@@ -44,7 +42,11 @@ class UltimateDemo:
 
         try:
             result = subprocess.run(
-                command, capture_output=True, text=True, timeout=timeout, cwd=self.base_dir
+                command,
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+                cwd=self.base_dir,
             )
             duration = time.time() - start_time
             success = result.returncode == 0
@@ -150,7 +152,9 @@ class UltimateDemo:
         plugin_results = []
         with ThreadPoolExecutor(max_workers=6) as executor:
             future_to_plugin = {
-                executor.submit(self.run_command_with_timing, command, description, 15): description
+                executor.submit(
+                    self.run_command_with_timing, command, description, 15
+                ): description
                 for command, description in plugin_tests
             }
 
@@ -187,15 +191,27 @@ class UltimateDemo:
                 ],
                 "PearAI Code Generation",
             ),
-            (["python3", "plugins/cursor/src/main.py", "backup"], "Cursor Session Backup"),
-            (["python3", "plugins/analytics/src/main.py", "metrics"], "Analytics Collection"),
             (
-                ["python3", "plugins/trae/src/main.py", "create", "--session", "demo_session"],
+                ["python3", "plugins/cursor/src/main.py", "backup"],
+                "Cursor Session Backup",
+            ),
+            (
+                ["python3", "plugins/analytics/src/main.py", "metrics"],
+                "Analytics Collection",
+            ),
+            (
+                [
+                    "python3",
+                    "plugins/trae/src/main.py",
+                    "create",
+                    "--session",
+                    "demo_session",
+                ],
                 "Trae Session Creation",
             ),
         ]
 
-        print(f"\n🎯 Advanced Plugin Capabilities:")
+        print("\n🎯 Advanced Plugin Capabilities:")
         advanced_results = []
         for command, description in advanced_tests:
             result = self.run_command_with_timing(command, description)
@@ -205,7 +221,9 @@ class UltimateDemo:
         total_plugin_tests = len(plugin_results)
         successful_plugins = sum(1 for r in plugin_results if r["success"])
         plugin_success_rate = (
-            successful_plugins / total_plugin_tests * 100 if total_plugin_tests > 0 else 0
+            successful_plugins / total_plugin_tests * 100
+            if total_plugin_tests > 0
+            else 0
         )
 
         advanced_success = sum(1 for r in advanced_results if r["success"])
@@ -223,7 +241,7 @@ class UltimateDemo:
             "advanced_results": advanced_results,
         }
 
-        print(f"\n📊 Plugin Ecosystem Health:")
+        print("\n📊 Plugin Ecosystem Health:")
         print(
             f"   Basic Plugin Tests: {successful_plugins}/{total_plugin_tests} ({plugin_success_rate:.1f}%)"
         )
@@ -250,9 +268,12 @@ class UltimateDemo:
             automation_results.append(result)
 
         # Demonstrate AI-powered features
-        print(f"\n🤖 AI-Powered Features:")
+        print("\n🤖 AI-Powered Features:")
         ai_tests = [
-            (["python3", "plugins/ai/tgpt/integration.py", "test"], "AI Integration Test"),
+            (
+                ["python3", "plugins/ai/tgpt/integration.py", "test"],
+                "AI Integration Test",
+            ),
         ]
 
         ai_results = []
@@ -269,12 +290,18 @@ class UltimateDemo:
         }
 
         success_rate = (
-            (automation_summary["successful_workflows"] + automation_summary["successful_ai"])
-            / (automation_summary["automation_workflows"] + automation_summary["ai_features"])
+            (
+                automation_summary["successful_workflows"]
+                + automation_summary["successful_ai"]
+            )
+            / (
+                automation_summary["automation_workflows"]
+                + automation_summary["ai_features"]
+            )
             * 100
         )
 
-        print(f"\n📊 Automation Summary:")
+        print("\n📊 Automation Summary:")
         print(
             f"   Workflows: {automation_summary['successful_workflows']}/{automation_summary['automation_workflows']} successful"
         )
@@ -292,8 +319,14 @@ class UltimateDemo:
         monitoring_tests = [
             (["python3", "real_time_monitor.py", "health"], "Health Report Generation"),
             (["python3", "auto_healing_system.py", "status"], "Auto-healing Status"),
-            (["python3", "auto_healing_system.py", "heal", "--dry-run"], "Healing Simulation"),
-            (["python3", "plugins/analytics/src/main.py", "report"], "Analytics Report"),
+            (
+                ["python3", "auto_healing_system.py", "heal", "--dry-run"],
+                "Healing Simulation",
+            ),
+            (
+                ["python3", "plugins/analytics/src/main.py", "report"],
+                "Analytics Report",
+            ),
         ]
 
         monitoring_results = []
@@ -322,7 +355,7 @@ class UltimateDemo:
             "results": monitoring_results,
         }
 
-        print(f"\n📊 Monitoring & Healing Summary:")
+        print("\n📊 Monitoring & Healing Summary:")
         print(
             f"   Tests: {monitoring_summary['successful_tests']}/{monitoring_summary['monitoring_tests']} successful"
         )
@@ -351,7 +384,9 @@ class UltimateDemo:
             duration = time.time() - start
             cli_times.append(duration)
             success = result.returncode == 0
-            print(f"   CLI Response {i+1}: {duration:.3f}s {'✅' if success else '❌'}")
+            print(
+                f"   CLI Response {i + 1}: {duration:.3f}s {'✅' if success else '❌'}"
+            )
 
         avg_cli_time = sum(cli_times) / len(cli_times)
 
@@ -372,13 +407,19 @@ class UltimateDemo:
                 duration = time.time() - start
                 success = result.returncode == 0
                 plugin_init_times[plugin] = {"time": duration, "success": success}
-                print(f"   {plugin.title()} Init: {duration:.3f}s {'✅' if success else '❌'}")
+                print(
+                    f"   {plugin.title()} Init: {duration:.3f}s {'✅' if success else '❌'}"
+                )
             except Exception as e:
-                plugin_init_times[plugin] = {"time": 10.0, "success": False, "error": str(e)}
+                plugin_init_times[plugin] = {
+                    "time": 10.0,
+                    "success": False,
+                    "error": str(e),
+                }
                 print(f"   {plugin.title()} Init: ERROR")
 
         # Memory efficiency test (simulated)
-        print(f"   Memory Usage: Efficient (optimized for containerized environments)")
+        print("   Memory Usage: Efficient (optimized for containerized environments)")
 
         performance_summary = {
             "cli_average_response": avg_cli_time,
@@ -389,8 +430,10 @@ class UltimateDemo:
             "benchmark_time": time.time() - system_start,
         }
 
-        print(f"\n📊 Performance Summary:")
-        print(f"   CLI Avg Response: {avg_cli_time:.3f}s {'⚡' if avg_cli_time < 1.0 else '🐌'}")
+        print("\n📊 Performance Summary:")
+        print(
+            f"   CLI Avg Response: {avg_cli_time:.3f}s {'⚡' if avg_cli_time < 1.0 else '🐌'}"
+        )
         print(
             f"   Plugin Init Avg: {sum(p['time'] for p in plugin_init_times.values()) / len(plugin_init_times):.3f}s"
         )
@@ -426,7 +469,9 @@ class UltimateDemo:
                     total_tests += results["monitoring_tests"]
                     successful_tests += results["successful_tests"]
 
-        overall_success_rate = successful_tests / total_tests * 100 if total_tests > 0 else 0
+        overall_success_rate = (
+            successful_tests / total_tests * 100 if total_tests > 0 else 0
+        )
 
         # Generate comprehensive report
         report_lines = [
@@ -448,7 +493,9 @@ class UltimateDemo:
             if isinstance(results, dict):
                 for key, value in results.items():
                     if not key.endswith("_results") and not key == "results":
-                        report_lines.append(f"- **{key.replace('_', ' ').title()}**: {value}")
+                        report_lines.append(
+                            f"- **{key.replace('_', ' ').title()}**: {value}"
+                        )
             report_lines.append("")
 
         report_lines.extend(
@@ -479,7 +526,9 @@ class UltimateDemo:
         report_content = "\n".join(report_lines)
 
         # Save report
-        report_file = f"ultimate_system_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
+        report_file = (
+            f"ultimate_system_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
+        )
         with open(report_file, "w") as f:
             f.write(report_content)
 
@@ -490,7 +539,7 @@ class UltimateDemo:
         """Run the complete ultimate demonstration."""
         self.print_banner("ULTIMATE UNIFIED TERMINAL AUTOMATION SYSTEM DEMONSTRATION")
 
-        print(f"🎯 Starting comprehensive system demonstration...")
+        print("🎯 Starting comprehensive system demonstration...")
         print(f"⏱️  Demo Start Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
         # Run all demonstration modules
@@ -524,13 +573,15 @@ class UltimateDemo:
         )
         print(f"⏱️  Total Time: {total_time:.2f} seconds")
         print(f"📄 Report: {report_file}")
-        print(f"🚀 System Status: REVOLUTIONARY SUCCESS")
+        print("🚀 System Status: REVOLUTIONARY SUCCESS")
 
         return {
             "demo_results": self.demo_results,
             "total_time": total_time,
             "report_file": report_file,
-            "modules_successful": len([r for r in self.demo_results.values() if "error" not in r]),
+            "modules_successful": len(
+                [r for r in self.demo_results.values() if "error" not in r]
+            ),
             "total_modules": len(demo_modules),
         }
 
@@ -544,8 +595,10 @@ def main():
 
     try:
         results = demo.run_ultimate_demo()
-        print(f"\n🎉 ULTIMATE DEMONSTRATION SUCCESSFUL!")
-        print(f"📈 {results['modules_successful']}/{results['total_modules']} modules completed")
+        print("\n🎉 ULTIMATE DEMONSTRATION SUCCESSFUL!")
+        print(
+            f"📈 {results['modules_successful']}/{results['total_modules']} modules completed"
+        )
         print(f"📄 Full report: {results['report_file']}")
 
     except KeyboardInterrupt:

@@ -20,7 +20,9 @@ def run_command(cmd, description):
         if isinstance(cmd, list):
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
         else:
-            result = subprocess.run(cmd.split(), capture_output=True, text=True, timeout=30)
+            result = subprocess.run(
+                cmd.split(), capture_output=True, text=True, timeout=30
+            )
 
         if result.stdout:
             print(result.stdout)
@@ -69,7 +71,9 @@ def main():
     tests.append(
         (
             "Unified CLI Help",
-            run_command("python3 unified_cli.py --help", "Testing unified CLI interface"),
+            run_command(
+                "python3 unified_cli.py --help", "Testing unified CLI interface"
+            ),
         )
     )
 
@@ -116,7 +120,10 @@ def main():
     tests.append(
         (
             "Cursor Plugin Test",
-            run_command("python3 plugins/cursor/src/main.py test", "Testing Cursor AI integration"),
+            run_command(
+                "python3 plugins/cursor/src/main.py test",
+                "Testing Cursor AI integration",
+            ),
         )
     )
 
@@ -124,7 +131,8 @@ def main():
         (
             "Windsurf Plugin Test",
             run_command(
-                "python3 plugins/windsurf/src/main.py test", "Testing Windsurf context routing"
+                "python3 plugins/windsurf/src/main.py test",
+                "Testing Windsurf context routing",
             ),
         )
     )
@@ -144,7 +152,8 @@ def main():
         (
             "AI Plugin Test",
             run_command(
-                "python3 plugins/ai/tgpt/integration.py test", "Testing AI integration framework"
+                "python3 plugins/ai/tgpt/integration.py test",
+                "Testing AI integration framework",
             ),
         )
     )
@@ -154,7 +163,8 @@ def main():
         (
             "Unified Warp Recovery",
             run_command(
-                "python3 unified_cli.py warp recover 1", "Testing Warp recovery via unified CLI"
+                "python3 unified_cli.py warp recover 1",
+                "Testing Warp recovery via unified CLI",
             ),
         )
     )

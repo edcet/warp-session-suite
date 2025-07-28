@@ -160,7 +160,8 @@ class RealTimeMonitor:
             [
                 a
                 for a in self.alerts
-                if a.level == "CRITICAL" and a.timestamp > datetime.now() - timedelta(minutes=5)
+                if a.level == "CRITICAL"
+                and a.timestamp > datetime.now() - timedelta(minutes=5)
             ]
         )
 
@@ -264,7 +265,9 @@ class RealTimeMonitor:
             )
 
         # Plugin Health Analysis
-        expected_plugins = 8  # warp, cursor, windsurf, pearai, trae, ai, core, analytics
+        expected_plugins = (
+            8  # warp, cursor, windsurf, pearai, trae, ai, core, analytics
+        )
         if metric.active_plugins < expected_plugins * 0.5:
             alerts.append(
                 Alert(
@@ -383,9 +386,13 @@ class RealTimeMonitor:
                 # Clear screen (works on most terminals)
                 print("\033[2J\033[H", end="")
 
-                print("🔴 REAL-TIME SYSTEM MONITOR - UNIFIED TERMINAL AUTOMATION SYSTEM")
+                print(
+                    "🔴 REAL-TIME SYSTEM MONITOR - UNIFIED TERMINAL AUTOMATION SYSTEM"
+                )
                 print("=" * 70)
-                print(f"📊 Live Dashboard | {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+                print(
+                    f"📊 Live Dashboard | {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+                )
                 print("=" * 70)
 
                 if self.metrics_history:
@@ -421,7 +428,9 @@ class RealTimeMonitor:
                             icon = (
                                 "🔴"
                                 if alert.level == "CRITICAL"
-                                else "🟡" if alert.level == "WARNING" else "🔵"
+                                else "🟡"
+                                if alert.level == "WARNING"
+                                else "🔵"
                             )
                             resolved = " [AUTO-RESOLVED]" if alert.auto_resolved else ""
                             print(
@@ -436,7 +445,9 @@ class RealTimeMonitor:
                         cpu_trend = (
                             "📈"
                             if latest_metric.cpu_usage > prev_metric.cpu_usage
-                            else "📉" if latest_metric.cpu_usage < prev_metric.cpu_usage else "➡️"
+                            else "📉"
+                            if latest_metric.cpu_usage < prev_metric.cpu_usage
+                            else "➡️"
                         )
                         mem_trend = (
                             "📈"
@@ -448,7 +459,7 @@ class RealTimeMonitor:
                             )
                         )
 
-                        print(f"\n📈 TRENDS:")
+                        print("\n📈 TRENDS:")
                         print(
                             f"   CPU Trend:     {cpu_trend} ({latest_metric.cpu_usage - prev_metric.cpu_usage:+.1f}%)"
                         )
@@ -464,13 +475,15 @@ class RealTimeMonitor:
                     """
                     ).fetchone()[0]
 
-                    print(f"\n🔧 AUTO-HEALING:")
+                    print("\n🔧 AUTO-HEALING:")
                     print(
                         f"   Status:        {'🟢 ENABLED' if self.auto_healing_enabled else '🔴 DISABLED'}"
                     )
                     print(f"   Recent Actions:{recent_healing:6d} (last 10 min)")
 
-                print(f"\n⏱️  Next update in {self.monitoring_interval:.0f}s | Press Ctrl+C to stop")
+                print(
+                    f"\n⏱️  Next update in {self.monitoring_interval:.0f}s | Press Ctrl+C to stop"
+                )
                 print("=" * 70)
 
                 time.sleep(self.monitoring_interval)
@@ -513,7 +526,9 @@ class RealTimeMonitor:
 
         print("🔴 Starting Real-Time System Monitor...")
         print(f"📊 Monitoring interval: {self.monitoring_interval}s")
-        print(f"🔧 Auto-healing: {'ENABLED' if self.auto_healing_enabled else 'DISABLED'}")
+        print(
+            f"🔧 Auto-healing: {'ENABLED' if self.auto_healing_enabled else 'DISABLED'}"
+        )
 
         # Start monitoring thread
         monitor_thread = threading.Thread(target=self.monitoring_loop, daemon=True)
@@ -540,12 +555,18 @@ class RealTimeMonitor:
 
         # Calculate averages over last hour
         one_hour_ago = datetime.now() - timedelta(hours=1)
-        recent_metrics = [m for m in self.metrics_history if m.timestamp >= one_hour_ago]
+        recent_metrics = [
+            m for m in self.metrics_history if m.timestamp >= one_hour_ago
+        ]
 
         if recent_metrics:
             avg_cpu = sum(m.cpu_usage for m in recent_metrics) / len(recent_metrics)
-            avg_memory = sum(m.memory_usage for m in recent_metrics) / len(recent_metrics)
-            avg_response = sum(m.response_time for m in recent_metrics) / len(recent_metrics)
+            avg_memory = sum(m.memory_usage for m in recent_metrics) / len(
+                recent_metrics
+            )
+            avg_response = sum(m.response_time for m in recent_metrics) / len(
+                recent_metrics
+            )
         else:
             avg_cpu = avg_memory = avg_response = 0
 
@@ -609,7 +630,9 @@ class RealTimeMonitor:
                     else (
                         "FAIR"
                         if overall_health >= 60
-                        else "POOR" if overall_health >= 40 else "CRITICAL"
+                        else "POOR"
+                        if overall_health >= 40
+                        else "CRITICAL"
                     )
                 )
             ),
@@ -633,7 +656,9 @@ def main():
     parser.add_argument(
         "--interval", type=float, default=5.0, help="Monitoring interval in seconds"
     )
-    parser.add_argument("--no-healing", action="store_true", help="Disable auto-healing")
+    parser.add_argument(
+        "--no-healing", action="store_true", help="Disable auto-healing"
+    )
     parser.add_argument(
         "--no-dashboard", action="store_true", help="Run monitoring without dashboard"
     )
@@ -664,7 +689,7 @@ def main():
             for i in range(5):
                 metric = monitor.collect_metrics()
                 print(
-                    f"📊 Metric {i+1}: CPU={metric.cpu_usage:.1f}% Memory={metric.memory_usage:.1f}% Response={metric.response_time:.2f}s"
+                    f"📊 Metric {i + 1}: CPU={metric.cpu_usage:.1f}% Memory={metric.memory_usage:.1f}% Response={metric.response_time:.2f}s"
                 )
                 time.sleep(1)
             print("✅ Monitoring test completed!")

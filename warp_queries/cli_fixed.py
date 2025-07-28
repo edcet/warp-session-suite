@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
-from typing import Optional
 
 try:
     import pandas as pd
@@ -113,7 +112,9 @@ def main():
                 info = db.table_info(table_name)
                 print(f"Schema for table '{table_name}':")
                 for col in info:
-                    print(f"  {col['name']}: {col['type']} {'(PRIMARY KEY)' if col['pk'] else ''}")
+                    print(
+                        f"  {col['name']}: {col['type']} {'(PRIMARY KEY)' if col['pk'] else ''}"
+                    )
 
             elif command == "query":
                 if len(sys.argv) < 3:

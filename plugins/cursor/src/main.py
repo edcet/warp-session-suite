@@ -5,11 +5,10 @@ Provides token management, auth bypass, and session persistence for Cursor
 """
 
 import json
-import os
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 # Add core plugin path
 sys.path.append(str(Path(__file__).parent.parent.parent))
@@ -71,7 +70,9 @@ class CursorPlugin(BasePlugin):
         for pattern in ["*.json", "*.db", "*.sqlite"]:
             session_files.extend(list(self.cursor_config_dir.glob(pattern)))
 
-        session_data["session_files"] = [str(f) for f in session_files[:10]]  # Limit output
+        session_data["session_files"] = [
+            str(f) for f in session_files[:10]
+        ]  # Limit output
 
         # Look for workspace settings
         workspace_files = list(self.cursor_config_dir.glob("**/settings.json"))
@@ -99,7 +100,9 @@ class CursorPlugin(BasePlugin):
             raise RuntimeError("Plugin not initialized")
 
         backup_data = self.get_session_state()
-        backup_file = f"cursor_session_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        backup_file = (
+            f"cursor_session_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        )
 
         with open(backup_file, "w") as f:
             json.dump(backup_data, f, indent=2)
@@ -122,7 +125,9 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="Cursor Plugin CLI")
-    parser.add_argument("command", choices=["test", "tokens", "backup"], help="Command to execute")
+    parser.add_argument(
+        "command", choices=["test", "tokens", "backup"], help="Command to execute"
+    )
 
     args = parser.parse_args()
 
@@ -134,10 +139,12 @@ if __name__ == "__main__":
 
             if args.command == "test":
                 session_data = plugin.get_session_state()
-                print(f"📊 Cursor Session Data:")
+                print("📊 Cursor Session Data:")
                 print(f"  Config Dir: {session_data.get('config_dir', 'Not found')}")
                 print(f"  Session Files: {len(session_data.get('session_files', []))}")
-                print(f"  Workspace Files: {len(session_data.get('workspace_files', []))}")
+                print(
+                    f"  Workspace Files: {len(session_data.get('workspace_files', []))}"
+                )
 
             elif args.command == "tokens":
                 tokens = plugin.get_auth_tokens()
