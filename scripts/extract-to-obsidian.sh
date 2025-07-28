@@ -15,7 +15,7 @@ mkdir -p "$OUTPUT_DIR"/{daily,projects,ai-conversations,command-patterns}
 # Daily session notes
 echo "📅 Creating daily session notes..."
 TODAY=$(date +%Y-%m-%d)
-sqlite3 "$WARP_DB" <<EOF > "$OUTPUT_DIR/daily/$TODAY.md"
+sqlite3 "$WARP_DB" <<EOF >"$OUTPUT_DIR/daily/$TODAY.md"
 .mode list
 .separator " "
 SELECT '# Daily Session: $TODAY' as title
@@ -27,11 +27,11 @@ UNION ALL
 SELECT '' as spacer
 UNION ALL
 SELECT 
-    '- **' || substr(start_ts, 12, 8) || '** `' || 
+    '- **' || substr(start_ts, 12, 8) || '** $(' || 
     CASE 
         WHEN length(command) > 60 THEN substr(command, 1, 60) || '...'
         ELSE command 
-    END || '`' ||
+    END || ')' ||
     CASE 
         WHEN exit_code != 0 THEN ' ❌ (' || exit_code || ')'
         ELSE ' ✅'
@@ -69,11 +69,11 @@ HAVING COUNT(*) >= 5
 ORDER BY COUNT(*) DESC
 LIMIT 10;
 EOF
-    if [[ -n "$project" && "$project" != "unknown" ]]; then
-        echo "  Creating note for project: $project ($count commands)"
-        
-        # Create project note with backlinks
-        cat > "$OUTPUT_DIR/projects/${project}.md" <<PROJECTMD
+  if [[ -n "$project" && "$project" != "unknown" ]]; then
+    echo "  Creating note for project: $project ($count commands)"
+
+    # Create project note with backlinks
+    cat >"$OUTPUT_DIR/projects/${project}.md" <<PROJECTMD
 # Project: $project
 
 **Command Activity**: $count commands (last 7 days)
@@ -81,13 +81,13 @@ EOF
 ## Recent Commands
 
 PROJECTMD
-        
-        # Add recent commands for this project
-        sqlite3 "$WARP_DB" <<PROJECTSQL >> "$OUTPUT_DIR/projects/${project}.md"
+
+    # Add recent commands for this project
+    sqlite3 "$WARP_DB" <<PROJECTSQL >>"$OUTPUT_DIR/projects/${project}.md"
 .mode list
 SELECT 
     '### ' || date(start_ts) || ' - ' || substr(start_ts, 12, 8) || '\n' ||
-    '```bash\n' || command || '\n```\n' ||
+    '$()$(bash\n' || command || '\n)$()\n' ||
     CASE 
         WHEN exit_code != 0 THEN '❌ Exit code: ' || exit_code || '\n'
         ELSE '✅ Success\n'
@@ -98,12 +98,12 @@ WHERE pwd LIKE '%$project%'
 ORDER BY start_ts DESC
 LIMIT 15;
 PROJECTSQL
-    fi
+  fi
 done
 
 # AI conversation extraction with relationships
 echo "🤖 Extracting AI conversations..."
-sqlite3 "$WARP_DB" <<EOF > "$OUTPUT_DIR/ai-conversations/recent-conversations.md"
+sqlite3 "$WARP_DB" <<EOF >"$OUTPUT_DIR/ai-conversations/recent-conversations.md"
 .mode list
 SELECT 
     '# Recent AI Conversations\n\n' ||
@@ -119,11 +119,11 @@ SELECT
         THEN substr(working_directory, length(working_directory) - instr(reverse(working_directory), '/') + 2)
         ELSE COALESCE(working_directory, 'unknown')
     END || ']]\n\n' ||
-    '```\n' || 
+    '$()$(\n' || 
     CASE 
         WHEN length(input) > 200 THEN substr(input, 1, 200) || '...'
         ELSE input
-    END || '\n```\n\n' ||
+    END || '\n)$()\n\n' ||
     '---\n\n'
 FROM ai_queries 
 WHERE start_ts > datetime('now', '-7 days')
@@ -133,7 +133,7 @@ EOF
 
 # Command pattern analysis
 echo "📊 Creating command pattern analysis..."
-sqlite3 "$WARP_DB" <<EOF > "$OUTPUT_DIR/command-patterns/pattern-analysis.md"
+sqlite3 "$WARP_DB" <<EOF >"$OUTPUT_DIR/command-patterns/pattern-analysis.md"
 .mode list
 SELECT 
     '# Command Pattern Analysis\n\n' ||
@@ -160,7 +160,7 @@ LIMIT 20;
 EOF
 
 # Create index file with graph relationships
-cat > "$OUTPUT_DIR/index.md" <<INDEXMD
+cat >"$OUTPUT_DIR/index.md" <<INDEXMD
 # Warp Session Index
 
 ## 📅 Daily Sessions
@@ -171,13 +171,13 @@ INDEXMD
 
 # Add project links
 for project_file in "$OUTPUT_DIR/projects/"*.md; do
-    if [[ -f "$project_file" ]]; then
-        project_name=$(basename "$project_file" .md)
-        echo "- [[$project_name]]" >> "$OUTPUT_DIR/index.md"
-    fi
+  if [[ -f "$project_file" ]]; then
+    project_name=$(basename "$project_file" .md)
+    echo "- [[$project_name]]" >>"$OUTPUT_DIR/index.md"
+  fi
 done
 
-cat >> "$OUTPUT_DIR/index.md" <<INDEXMD2
+cat >>"$OUTPUT_DIR/index.md" <<INDEXMD2
 
 ## 🤖 AI Interactions
 - [[recent-conversations]]

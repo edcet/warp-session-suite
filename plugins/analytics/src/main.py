@@ -5,14 +5,11 @@ Provides comprehensive system monitoring, performance analysis, and predictive i
 """
 
 import json
-import os
 import sqlite3
 import sys
-import time
-from collections import Counter, defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 # Add core plugin path
 sys.path.append(str(Path(__file__).parent.parent.parent))
@@ -122,7 +119,10 @@ class AnalyticsPlugin(BasePlugin):
 
     def collect_system_metrics(self) -> Dict[str, Any]:
         """Collect comprehensive system performance metrics."""
-        metrics = {"timestamp": datetime.now().isoformat(), "collection_type": "system_performance"}
+        metrics = {
+            "timestamp": datetime.now().isoformat(),
+            "collection_type": "system_performance",
+        }
 
         try:
             # Simulate system metrics collection
@@ -155,7 +155,9 @@ class AnalyticsPlugin(BasePlugin):
             with open(plugin_registry_path) as f:
                 registry = json.load(f)
                 active_plugins = sum(
-                    1 for name, info in registry["plugins"].items() if Path(info["entry"]).exists()
+                    1
+                    for name, info in registry["plugins"].items()
+                    if Path(info["entry"]).exists()
                 )
                 metrics["active_plugins"] = active_plugins
 
@@ -180,7 +182,10 @@ class AnalyticsPlugin(BasePlugin):
 
     def analyze_usage_patterns(self, days: int = 7) -> Dict[str, Any]:
         """Analyze usage patterns across all plugins."""
-        analysis = {"analysis_period_days": days, "timestamp": datetime.now().isoformat()}
+        analysis = {
+            "analysis_period_days": days,
+            "timestamp": datetime.now().isoformat(),
+        }
 
         # Analyze plugin usage from various sources
         patterns = {
@@ -236,8 +241,16 @@ class AnalyticsPlugin(BasePlugin):
     def _analyze_error_patterns(self) -> List[Dict[str, Any]]:
         """Analyze error patterns and failure modes."""
         return [
-            {"error_type": "plugin_initialization_failure", "count": 3, "trend": "decreasing"},
-            {"error_type": "database_connection_timeout", "count": 1, "trend": "stable"},
+            {
+                "error_type": "plugin_initialization_failure",
+                "count": 3,
+                "trend": "decreasing",
+            },
+            {
+                "error_type": "database_connection_timeout",
+                "count": 1,
+                "trend": "stable",
+            },
             {"error_type": "ai_service_unavailable", "count": 2, "trend": "stable"},
         ]
 
@@ -295,8 +308,12 @@ class AnalyticsPlugin(BasePlugin):
         ).fetchall()
 
         if recent_metrics:
-            avg_cpu = sum(row["cpu_usage"] for row in recent_metrics) / len(recent_metrics)
-            avg_memory = sum(row["memory_usage"] for row in recent_metrics) / len(recent_metrics)
+            avg_cpu = sum(row["cpu_usage"] for row in recent_metrics) / len(
+                recent_metrics
+            )
+            avg_memory = sum(row["memory_usage"] for row in recent_metrics) / len(
+                recent_metrics
+            )
 
             recommendations = []
 
@@ -464,10 +481,14 @@ if __name__ == "__main__":
 
             if args.command == "test":
                 session_data = plugin.get_session_state()
-                print(f"📊 Analytics Session Data:")
+                print("📊 Analytics Session Data:")
                 print(f"  Database: {session_data.get('database_path', 'Not found')}")
-                print(f"  Metrics Collected: {session_data.get('metrics_collected', 0)}")
-                print(f"  Insights Generated: {session_data.get('insights_generated', 0)}")
+                print(
+                    f"  Metrics Collected: {session_data.get('metrics_collected', 0)}"
+                )
+                print(
+                    f"  Insights Generated: {session_data.get('insights_generated', 0)}"
+                )
 
             elif args.command == "metrics":
                 metrics = plugin.collect_system_metrics()

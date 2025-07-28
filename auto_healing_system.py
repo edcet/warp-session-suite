@@ -8,10 +8,10 @@ import json
 import subprocess
 import time
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
 
 class HealingPriority(Enum):
@@ -61,7 +61,11 @@ class AutoHealingSystem:
         self.healing_rules = {
             "plugin_initialization_failure": {
                 "priority": HealingPriority.HIGH,
-                "actions": ["restart_plugin", "clear_plugin_cache", "reinstall_dependencies"],
+                "actions": [
+                    "restart_plugin",
+                    "clear_plugin_cache",
+                    "reinstall_dependencies",
+                ],
                 "success_rate": 0.85,
             },
             "database_connection_timeout": {
@@ -93,12 +97,20 @@ class AutoHealingSystem:
             },
             "slow_response_time": {
                 "priority": HealingPriority.MEDIUM,
-                "actions": ["cache_optimization", "database_indexing", "plugin_performance_tuning"],
+                "actions": [
+                    "cache_optimization",
+                    "database_indexing",
+                    "plugin_performance_tuning",
+                ],
                 "success_rate": 0.73,
             },
             "plugin_crash": {
                 "priority": HealingPriority.CRITICAL,
-                "actions": ["restart_plugin", "check_dependencies", "restore_backup_state"],
+                "actions": [
+                    "restart_plugin",
+                    "check_dependencies",
+                    "restore_backup_state",
+                ],
                 "success_rate": 0.89,
             },
         }
@@ -190,7 +202,10 @@ class AutoHealingSystem:
                                 severity=HealingPriority.MEDIUM,
                                 description=f"Plugin {plugin_name} failing tests",
                                 detected_at=datetime.now(),
-                                symptoms=["Plugin test failure", "Reduced functionality"],
+                                symptoms=[
+                                    "Plugin test failure",
+                                    "Reduced functionality",
+                                ],
                                 healing_actions=[
                                     "restart_plugin",
                                     "clear_plugin_cache",
@@ -218,7 +233,7 @@ class AutoHealingSystem:
                 except Exception:
                     pass  # Plugin might not support test command
 
-        except Exception as e:
+        except Exception:
             issues.append(
                 SystemIssue(
                     issue_id="plugin_registry_corrupt",
@@ -227,7 +242,11 @@ class AutoHealingSystem:
                     description="Plugin registry is corrupted",
                     detected_at=datetime.now(),
                     symptoms=["Cannot parse registry", "JSON syntax error"],
-                    healing_actions=["repair_registry", "restore_from_backup", "recreate_registry"],
+                    healing_actions=[
+                        "repair_registry",
+                        "restore_from_backup",
+                        "recreate_registry",
+                    ],
                 )
             )
 
@@ -392,7 +411,10 @@ class AutoHealingSystem:
                         severity=HealingPriority.CRITICAL,
                         description=f"Critical configuration file missing: {file_path_str}",
                         detected_at=datetime.now(),
-                        symptoms=["Configuration file not found", "System misconfiguration"],
+                        symptoms=[
+                            "Configuration file not found",
+                            "System misconfiguration",
+                        ],
                         healing_actions=[
                             "restore_config_from_backup",
                             "regenerate_config",
@@ -408,8 +430,14 @@ class AutoHealingSystem:
                         severity=HealingPriority.HIGH,
                         description=f"Configuration file is empty: {file_path_str}",
                         detected_at=datetime.now(),
-                        symptoms=["Empty configuration file", "Configuration data lost"],
-                        healing_actions=["restore_config_from_backup", "regenerate_default_config"],
+                        symptoms=[
+                            "Empty configuration file",
+                            "Configuration data lost",
+                        ],
+                        healing_actions=[
+                            "restore_config_from_backup",
+                            "regenerate_default_config",
+                        ],
                     )
                 )
 
@@ -428,12 +456,14 @@ class AutoHealingSystem:
 
         return healing_actions
 
-    def _generate_healing_actions_for_issue(self, issue: SystemIssue) -> List[HealingAction]:
+    def _generate_healing_actions_for_issue(
+        self, issue: SystemIssue
+    ) -> List[HealingAction]:
         """Generate specific healing actions for an issue."""
         actions = []
 
         for i, action_desc in enumerate(issue.healing_actions):
-            action_id = f"{issue.issue_id}_action_{i+1}"
+            action_id = f"{issue.issue_id}_action_{i + 1}"
 
             if action_desc == "restart_plugin":
                 actions.append(
@@ -527,7 +557,9 @@ class AutoHealingSystem:
 
         return actions
 
-    def execute_healing_plan(self, healing_actions: List[HealingAction]) -> Dict[str, Any]:
+    def execute_healing_plan(
+        self, healing_actions: List[HealingAction]
+    ) -> Dict[str, Any]:
         """Execute the healing plan and return results."""
         results = {
             "total_actions": len(healing_actions),
@@ -598,7 +630,7 @@ class AutoHealingSystem:
             else 0
         )
 
-        print(f"\n🎯 Healing Plan Results:")
+        print("\n🎯 Healing Plan Results:")
         print(f"   Total Actions: {results['total_actions']}")
         print(f"   Successful: {results['successful_actions']}")
         print(f"   Failed: {results['failed_actions']}")
@@ -640,7 +672,9 @@ class AutoHealingSystem:
         print("4️⃣ Verifying healing results...")
         post_healing_issues = self.detect_system_issues()
 
-        healing_effectiveness = max(0, len(issues) - len(post_healing_issues)) / len(issues) * 100
+        healing_effectiveness = (
+            max(0, len(issues) - len(post_healing_issues)) / len(issues) * 100
+        )
 
         cycle_results = {
             "cycle_time": time.time() - cycle_start,
@@ -649,11 +683,15 @@ class AutoHealingSystem:
             "healing_effectiveness": healing_effectiveness,
             "healing_required": True,
             "execution_results": execution_results,
-            "status": "healing_completed" if healing_effectiveness > 50 else "healing_partial",
+            "status": "healing_completed"
+            if healing_effectiveness > 50
+            else "healing_partial",
         }
 
-        print(f"\n🎉 Healing Cycle Complete!")
-        print(f"   Issues Resolved: {len(issues) - len(post_healing_issues)}/{len(issues)}")
+        print("\n🎉 Healing Cycle Complete!")
+        print(
+            f"   Issues Resolved: {len(issues) - len(post_healing_issues)}/{len(issues)}"
+        )
         print(f"   Effectiveness: {healing_effectiveness:.1f}%")
         print(f"   Total Time: {cycle_results['cycle_time']:.2f}s")
 
@@ -673,7 +711,9 @@ def main():
         help="Command to execute",
     )
     parser.add_argument(
-        "--dry-run", action="store_true", help="Show what would be healed without executing"
+        "--dry-run",
+        action="store_true",
+        help="Show what would be healed without executing",
     )
 
     args = parser.parse_args()
@@ -697,7 +737,7 @@ def main():
                     print("✅ No issues detected - system healthy!")
             else:
                 results = healing_system.run_full_healing_cycle()
-                print(f"\n📄 Full results available in memory")
+                print("\n📄 Full results available in memory")
 
         elif args.command == "detect":
             print("🔍 SYSTEM ISSUE DETECTION")
@@ -709,7 +749,9 @@ def main():
                     priority_icon = (
                         "🔴"
                         if issue.severity == HealingPriority.CRITICAL
-                        else "🟡" if issue.severity == HealingPriority.HIGH else "🟢"
+                        else "🟡"
+                        if issue.severity == HealingPriority.HIGH
+                        else "🟢"
                     )
                     print(
                         f"   {priority_icon} [{issue.severity.name}] {issue.component}: {issue.description}"
@@ -734,14 +776,18 @@ def main():
         elif args.command == "status":
             print("📊 AUTO-HEALING SYSTEM STATUS")
             print("=" * 30)
-            print(f"   Healing Enabled: {'🟢 YES' if healing_system.healing_enabled else '🔴 NO'}")
+            print(
+                f"   Healing Enabled: {'🟢 YES' if healing_system.healing_enabled else '🔴 NO'}"
+            )
             print(f"   Known Patterns: {len(healing_system.healing_rules)}")
             print(f"   History Entries: {len(healing_system.healing_history)}")
 
             # Quick health check
             issues = healing_system.detect_system_issues()
             if issues:
-                critical = len([i for i in issues if i.severity == HealingPriority.CRITICAL])
+                critical = len(
+                    [i for i in issues if i.severity == HealingPriority.CRITICAL]
+                )
                 high = len([i for i in issues if i.severity == HealingPriority.HIGH])
                 print(f"   Current Issues: 🔴 {critical} Critical, 🟡 {high} High")
             else:

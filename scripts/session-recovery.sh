@@ -13,15 +13,15 @@ BACKUP_DB="$HOME/Library/Application Support/dev.warp.Warp-Stable/warp_backup.sq
 
 # Verify Warp database exists
 if [[ ! -f "$WARP_DB" ]]; then
-    echo "❌ Warp database not found at: $WARP_DB"
-    echo "💡 Checking for backup database..."
-    if [[ -f "$BACKUP_DB" ]]; then
-        WARP_DB="$BACKUP_DB"
-        echo "✅ Using backup database"
-    else
-        echo "❌ No database found. Exiting."
-        exit 1
-    fi
+  echo "❌ Warp database not found at: $WARP_DB"
+  echo "💡 Checking for backup database..."
+  if [[ -f "$BACKUP_DB" ]]; then
+    WARP_DB="$BACKUP_DB"
+    echo "✅ Using backup database"
+  else
+    echo "❌ No database found. Exiting."
+    exit 1
+  fi
 fi
 
 # Create enhanced recovery structure
@@ -31,7 +31,7 @@ cd "$RECOVERY_DIR"
 echo "📊 Extracting comprehensive Warp session data..."
 
 # Enhanced data extraction with session types integration
-sqlite3 "$WARP_DB" <<EOF > data/comprehensive_export.json
+sqlite3 "$WARP_DB" <<EOF >data/comprehensive_export.json
 .mode json
 SELECT json_object(
     'metadata', json_object(
@@ -108,7 +108,7 @@ SELECT json_object(
 EOF
 
 # Create advanced analysis script with Go types integration
-cat > analysis/advanced_analyzer.py << 'PYTHON'
+cat >analysis/advanced_analyzer.py <<'PYTHON'
 import json
 import sys
 from pathlib import Path
@@ -287,11 +287,11 @@ python analysis/advanced_analyzer.py
 
 # Create AI context extraction for local models
 echo "🧠 Extracting AI context for local models..."
-cat > ai-context/conversation_context.jsonl << 'EOF'
+cat >ai-context/conversation_context.jsonl <<'EOF'
 EOF
 
 # Extract AI conversations in JSONL format for model fine-tuning
-sqlite3 "$WARP_DB" <<EOF >> ai-context/conversation_context.jsonl
+sqlite3 "$WARP_DB" <<EOF >>ai-context/conversation_context.jsonl
 .mode json
 SELECT json_object(
     'timestamp', start_ts,
@@ -305,7 +305,7 @@ ORDER BY start_ts DESC;
 EOF
 
 # Create viewing and export utilities
-cat > view_results.sh << 'VIEWER'
+cat >view_results.sh <<'VIEWER'
 #!/bin/bash
 echo "📚 Warp Session Recovery Results:"
 echo ""
@@ -346,7 +346,7 @@ echo "  - Recovery Scripts: cat exports/recovery_commands.md"
 echo ""
 echo "🔮 AI Integration Ready:"
 echo "  - Context file: ai-context/conversation_context.jsonl"
-echo "  - Total conversations extracted: $(wc -l < ai-context/conversation_context.jsonl)"
+echo "  - Total conversations extracted: $(wc -l <ai-context/conversation_context.jsonl)"
 echo ""
 echo "💡 Next Steps:"
 echo "  1. Review the advanced analysis for patterns"

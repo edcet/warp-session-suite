@@ -76,4 +76,8 @@ class SQL:
     @classmethod
     def list_queries(cls) -> list[str]:
         """Return list of available SQL snippet names."""
-        return [k for k in cls.__dict__.keys() if not k.startswith("__") and k != "list_queries"]
+        return [
+            k
+            for k in cls.__dict__.keys()
+            if not k.startswith("__") and k != "list_queries"
+        ]

@@ -10,7 +10,7 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 # Add core plugin path
 sys.path.append(str(Path(__file__).parent.parent.parent))
@@ -48,7 +48,10 @@ class TraePlugin(BasePlugin):
         for multiplexer in multiplexers:
             try:
                 result = subprocess.run(
-                    [multiplexer, "--version"], capture_output=True, text=True, timeout=5
+                    [multiplexer, "--version"],
+                    capture_output=True,
+                    text=True,
+                    timeout=5,
                 )
                 if result.returncode == 0:
                     self.multiplexer_type = multiplexer
@@ -111,7 +114,9 @@ class TraePlugin(BasePlugin):
                                 sessions.append(
                                     {
                                         "session_id": parts[0],
-                                        "windows": parts[1].split()[0] if parts[1] else "0",
+                                        "windows": parts[1].split()[0]
+                                        if parts[1]
+                                        else "0",
                                         "status": "active",
                                     }
                                 )
@@ -195,7 +200,9 @@ class TraePlugin(BasePlugin):
             },
         ]
 
-    def create_session(self, session_name: str, workspace_path: str = None) -> Dict[str, Any]:
+    def create_session(
+        self, session_name: str, workspace_path: str = None
+    ) -> Dict[str, Any]:
         """Create a new terminal session."""
         creation_result = {
             "session_name": session_name,
@@ -233,10 +240,16 @@ class TraePlugin(BasePlugin):
                     )
                 else:
                     creation_result.update(
-                        {"status": "failed", "reason": result.stderr.strip(), "session_id": None}
+                        {
+                            "status": "failed",
+                            "reason": result.stderr.strip(),
+                            "session_id": None,
+                        }
                     )
             except Exception as e:
-                creation_result.update({"status": "failed", "reason": str(e), "session_id": None})
+                creation_result.update(
+                    {"status": "failed", "reason": str(e), "session_id": None}
+                )
         else:
             # Simulated creation for other multiplexers
             creation_result.update(
@@ -258,7 +271,9 @@ class TraePlugin(BasePlugin):
         }
 
         workspaces = self._get_workspaces()
-        workspace = next((w for w in workspaces if w["workspace_id"] == workspace_id), None)
+        workspace = next(
+            (w for w in workspaces if w["workspace_id"] == workspace_id), None
+        )
 
         if not workspace:
             orchestration_result.update(
@@ -277,10 +292,14 @@ class TraePlugin(BasePlugin):
         for session_name in workspace.get("sessions", []):
             if session_name != f"{workspace_id}_main":
                 sub_result = self.create_session(session_name, workspace["path"])
-                actions_performed.append(f"Created {session_name}: {sub_result['status']}")
+                actions_performed.append(
+                    f"Created {session_name}: {sub_result['status']}"
+                )
 
         # Apply layout
-        actions_performed.append(f"Applied layout: {workspace.get('layout', 'default')}")
+        actions_performed.append(
+            f"Applied layout: {workspace.get('layout', 'default')}"
+        )
 
         orchestration_result.update(
             {
@@ -306,10 +325,16 @@ class TraePlugin(BasePlugin):
 
         if action == "list":
             management_result.update(
-                {"status": "success", "processes": processes, "process_count": len(processes)}
+                {
+                    "status": "success",
+                    "processes": processes,
+                    "process_count": len(processes),
+                }
             )
         elif action == "restart" and process_id:
-            process = next((p for p in processes if p["process_id"] == process_id), None)
+            process = next(
+                (p for p in processes if p["process_id"] == process_id), None
+            )
             if process:
                 management_result.update(
                     {
@@ -323,7 +348,9 @@ class TraePlugin(BasePlugin):
                     {"status": "failed", "reason": f"Process {process_id} not found"}
                 )
         else:
-            management_result.update({"status": "failed", "reason": f"Unknown action: {action}"})
+            management_result.update(
+                {"status": "failed", "reason": f"Unknown action: {action}"}
+            )
 
         return management_result
 
@@ -344,12 +371,16 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Trae Plugin CLI")
     parser.add_argument(
-        "command", choices=["test", "create", "orchestrate", "processes"], help="Command to execute"
+        "command",
+        choices=["test", "create", "orchestrate", "processes"],
+        help="Command to execute",
     )
     parser.add_argument("--session", type=str, help="Session name")
     parser.add_argument("--workspace", type=str, help="Workspace ID")
     parser.add_argument("--path", type=str, help="Workspace path")
-    parser.add_argument("--action", type=str, choices=["list", "restart"], help="Process action")
+    parser.add_argument(
+        "--action", type=str, choices=["list", "restart"], help="Process action"
+    )
     parser.add_argument("--process", type=str, help="Process ID")
 
     args = parser.parse_args()
@@ -362,10 +393,12 @@ if __name__ == "__main__":
 
             if args.command == "test":
                 session_data = plugin.get_session_state()
-                print(f"📊 Trae Session Data:")
+                print("📊 Trae Session Data:")
                 print(f"  Active: {session_data.get('trae_active', False)}")
                 print(f"  Multiplexer: {session_data.get('multiplexer_type', 'None')}")
-                print(f"  Active Sessions: {len(session_data.get('active_sessions', []))}")
+                print(
+                    f"  Active Sessions: {len(session_data.get('active_sessions', []))}"
+                )
                 print(f"  Workspaces: {len(session_data.get('workspaces', []))}")
 
             elif args.command == "create":

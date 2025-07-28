@@ -5,12 +5,11 @@ Integrates trunk, lefthook, formatters, parsers, and linters for comprehensive c
 """
 
 import json
-import os
 import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 # Add core plugin path
 sys.path.append(str(Path(__file__).parent.parent.parent))
@@ -69,17 +68,27 @@ class CodeQualityPlugin(BasePlugin):
         for tool_name, command in tools_to_check.items():
             try:
                 result = subprocess.run(
-                    command, capture_output=True, text=True, timeout=5, cwd=self.base_dir
+                    command,
+                    capture_output=True,
+                    text=True,
+                    timeout=5,
+                    cwd=self.base_dir,
                 )
                 self.tools_status[tool_name] = {
                     "available": result.returncode == 0,
-                    "version": result.stdout.strip() if result.returncode == 0 else None,
+                    "version": result.stdout.strip()
+                    if result.returncode == 0
+                    else None,
                     "path": subprocess.run(
                         ["which", command[0]], capture_output=True, text=True
                     ).stdout.strip(),
                 }
             except (subprocess.TimeoutExpired, FileNotFoundError):
-                self.tools_status[tool_name] = {"available": False, "version": None, "path": None}
+                self.tools_status[tool_name] = {
+                    "available": False,
+                    "version": None,
+                    "path": None,
+                }
 
     def _ensure_configuration_files(self):
         """Ensure all necessary configuration files exist."""
@@ -274,21 +283,32 @@ skips = ["B101", "B601"]
             "plugin_version": self.version,
             "capabilities": self.capabilities,
             "tools_status": self.tools_status,
-            "available_tools": len([t for t in self.tools_status.values() if t["available"]]),
+            "available_tools": len(
+                [t for t in self.tools_status.values() if t["available"]]
+            ),
             "total_tools": len(self.tools_status),
             "session_timestamp": datetime.now().isoformat(),
         }
 
     def install_tools(self) -> Dict[str, Any]:
         """Install missing code quality tools."""
-        installation_results = {"timestamp": datetime.now().isoformat(), "installations": []}
+        installation_results = {
+            "timestamp": datetime.now().isoformat(),
+            "installations": [],
+        }
 
         # Install trunk if not available
         if not self.tools_status.get("trunk", {}).get("available", False):
             try:
                 print("📦 Installing trunk...")
                 result = subprocess.run(
-                    ["curl", "-fsSL", "https://get.trunk.io", "-o", "/tmp/install_trunk.sh"],
+                    [
+                        "curl",
+                        "-fsSL",
+                        "https://get.trunk.io",
+                        "-o",
+                        "/tmp/install_trunk.sh",
+                    ],
                     capture_output=True,
                     text=True,
                     timeout=30,
@@ -326,7 +346,11 @@ skips = ["B101", "B601"]
                 )
 
                 installation_results["installations"].append(
-                    {"tool": "lefthook", "success": result.returncode == 0, "method": "npm"}
+                    {
+                        "tool": "lefthook",
+                        "success": result.returncode == 0,
+                        "method": "npm",
+                    }
                 )
             except Exception as e:
                 installation_results["installations"].append(
@@ -347,7 +371,11 @@ skips = ["B101", "B601"]
                     )
 
                     installation_results["installations"].append(
-                        {"tool": tool, "success": result.returncode == 0, "method": "pip"}
+                        {
+                            "tool": tool,
+                            "success": result.returncode == 0,
+                            "method": "pip",
+                        }
                     )
                 except Exception as e:
                     installation_results["installations"].append(
@@ -356,7 +384,9 @@ skips = ["B101", "B601"]
 
         return installation_results
 
-    def run_trunk_check(self, files: List[str] = None, fix: bool = False) -> Dict[str, Any]:
+    def run_trunk_check(
+        self, files: List[str] = None, fix: bool = False
+    ) -> Dict[str, Any]:
         """Run trunk check on specified files or all files."""
         command = ["trunk", "check"]
 
@@ -389,7 +419,9 @@ skips = ["B101", "B601"]
                 "timestamp": datetime.now().isoformat(),
             }
 
-    def run_formatting(self, language: str = None, files: List[str] = None) -> Dict[str, Any]:
+    def run_formatting(
+        self, language: str = None, files: List[str] = None
+    ) -> Dict[str, Any]:
         """Run appropriate formatters based on language or file extensions."""
         formatting_results = {"timestamp": datetime.now().isoformat(), "results": []}
 
@@ -403,7 +435,8 @@ skips = ["B101", "B601"]
             if self.tools_status.get("black", {}).get("available", False):
                 try:
                     result = subprocess.run(
-                        ["black", "--line-length", "100"] + [str(f) for f in python_files],
+                        ["black", "--line-length", "100"]
+                        + [str(f) for f in python_files],
                         capture_output=True,
                         text=True,
                         timeout=60,
@@ -427,7 +460,8 @@ skips = ["B101", "B601"]
             if self.tools_status.get("isort", {}).get("available", False):
                 try:
                     result = subprocess.run(
-                        ["isort", "--profile", "black"] + [str(f) for f in python_files],
+                        ["isort", "--profile", "black"]
+                        + [str(f) for f in python_files],
                         capture_output=True,
                         text=True,
                         timeout=60,
@@ -482,7 +516,9 @@ skips = ["B101", "B601"]
         """Setup git hooks using lefthook."""
         setup_result = {
             "timestamp": datetime.now().isoformat(),
-            "lefthook_available": self.tools_status.get("lefthook", {}).get("available", False),
+            "lefthook_available": self.tools_status.get("lefthook", {}).get(
+                "available", False
+            ),
         }
 
         if not setup_result["lefthook_available"]:
@@ -611,7 +647,9 @@ if __name__ == "__main__":
         choices=["test", "install", "check", "format", "hooks", "security"],
         help="Command to execute",
     )
-    parser.add_argument("--language", type=str, help="Language to format (python, javascript)")
+    parser.add_argument(
+        "--language", type=str, help="Language to format (python, javascript)"
+    )
     parser.add_argument("--files", nargs="*", help="Specific files to process")
     parser.add_argument("--fix", action="store_true", help="Automatically fix issues")
 
@@ -625,13 +663,15 @@ if __name__ == "__main__":
 
             if args.command == "test":
                 session_data = plugin.get_session_state()
-                print(f"📊 Code Quality Session Data:")
+                print("📊 Code Quality Session Data:")
                 print(
                     f"  Available Tools: {session_data.get('available_tools', 0)}/{session_data.get('total_tools', 0)}"
                 )
                 for tool, status in session_data.get("tools_status", {}).items():
                     icon = "✅" if status["available"] else "❌"
-                    print(f"    {icon} {tool}: {status.get('version', 'Not available')}")
+                    print(
+                        f"    {icon} {tool}: {status.get('version', 'Not available')}"
+                    )
 
             elif args.command == "install":
                 print("📦 Installing missing code quality tools...")
@@ -657,13 +697,17 @@ if __name__ == "__main__":
                 print("Formatting Results:")
                 for fmt_result in result.get("results", []):
                     status = "✅" if fmt_result["success"] else "❌"
-                    print(f"  {status} {fmt_result['tool']}: {fmt_result.get('files', 0)} files")
+                    print(
+                        f"  {status} {fmt_result['tool']}: {fmt_result.get('files', 0)} files"
+                    )
 
             elif args.command == "hooks":
                 print("🎣 Setting up Git hooks...")
                 result = plugin.setup_git_hooks()
                 if result.get("install_success", False):
-                    print(f"✅ Git hooks installed: {result.get('hooks_count', 0)} hooks")
+                    print(
+                        f"✅ Git hooks installed: {result.get('hooks_count', 0)} hooks"
+                    )
                 else:
                     print("❌ Failed to install Git hooks")
                     print(result.get("install_error", ""))

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Standalone test script for Warp session recovery."""
 
-import json
 import sqlite3
 import sys
 from pathlib import Path
@@ -36,9 +35,9 @@ def find_warp_database() -> Path:
         return test_db
 
     raise FileNotFoundError(
-        f"Could not find Warp database. Searched paths:\n"
+        "Could not find Warp database. Searched paths:\n"
         + "\n".join(f"  - {p}" for p in WARP_DB_PATHS)
-        + f"\n\nMake sure Warp Terminal is installed and has been used."
+        + "\n\nMake sure Warp Terminal is installed and has been used."
     )
 
 
@@ -149,7 +148,7 @@ def print_results(results, title: str):
             print("No results found")
             return
         for i, row in enumerate(results[:10]):  # Limit to 10 rows for display
-            print(f"Row {i+1}:")
+            print(f"Row {i + 1}:")
             for key, value in row.items():
                 print(f"  {key}: {str(value)[:100]}")
             print()

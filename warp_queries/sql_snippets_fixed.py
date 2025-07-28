@@ -191,5 +191,7 @@ class WarpSQL:
         return [
             k
             for k in cls.__dict__.keys()
-            if not k.startswith("__") and k != "list_queries" and isinstance(getattr(cls, k), str)
+            if not k.startswith("__")
+            and k != "list_queries"
+            and isinstance(getattr(cls, k), str)
         ]
