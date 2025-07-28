@@ -36,4 +36,8 @@ if command -v shfmt >/dev/null 2>&1; then
     find . -name "*.sh" -not -path "./.git/*" -exec shfmt -w -i 2 {} \; 2>/dev/null || true
 fi
 
+# Clean up any problematic cache files that could cause CI permission issues
+echo "🧹 Cleaning up cache files..."
+rm -rf .trunk/actions .trunk/logs .trunk/notifications .trunk/out .trunk/plugins .trunk/tools 2>/dev/null || true
+
 echo "✅ Formatting and quality checks completed!"
