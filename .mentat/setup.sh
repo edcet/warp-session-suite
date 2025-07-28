@@ -365,6 +365,190 @@ EOF
 }
 
 # ============================================================================
+# Direct Configuration Fallback (when Comtrya is unavailable)
+# ============================================================================
+
+execute_direct_configuration() {
+  echo "🔧 Executing direct configuration without Comtrya..."
+
+  # Phase 4.1: Mise Tool Manager
+  echo "📦 Phase 4.1: Setting up Mise tool manager..."
+  if ! command -v mise >/dev/null 2>&1; then
+    echo "📥 Installing mise..."
+    curl https://mise.run | sh
+    export PATH="$HOME/.local/bin:$PATH"
+    echo "✅ Mise installed"
+  else
+    echo "✅ Mise already available"
+  fi
+
+  # Install tools from .tool-versions if available
+  if [[ -f .tool-versions ]]; then
+    echo "🔧 Installing tools from .tool-versions..."
+    mise install || echo "⚠️ Some tools failed to install via mise"
+  fi
+
+  # Phase 4.2: Python Development Stack
+  echo "🐍 Phase 4.2: Setting up Python development stack..."
+
+  # Determine best Python to use
+  local python_cmd
+  if python_cmd=$(mise which python 2>/dev/null); then
+    echo "🎯 Using mise Python: $python_cmd"
+  elif command -v python3 >/dev/null 2>&1; then
+    python_cmd="python3"
+    echo "🎯 Using system Python: $python_cmd"
+  elif command -v python >/dev/null 2>&1; then
+    python_cmd="python"
+    echo "🎯 Using system Python: $python_cmd"
+  else
+    echo "❌ No Python found, skipping Python setup"
+    return 1
+  fi
+
+  # Upgrade pip and essential tools
+  echo "📦 Upgrading pip and essential Python tools..."
+  $python_cmd -m pip install --user --upgrade pip setuptools wheel || echo "⚠️ pip upgrade failed"
+
+  # Install project dependencies if pyproject.toml exists
+  if [[ -f pyproject.toml ]]; then
+    echo "📦 Installing project dependencies..."
+    $python_cmd -m pip install --user "typer[all]>=0.9" "duckdb>=1.1.3" "rich>=13.7" || echo "⚠️ Some project dependencies failed"
+  fi
+
+  # Install code quality tools
+  echo "🔍 Installing Python code quality tools..."
+  $python_cmd -m pip install --user black isort ruff mypy pylint bandit || echo "⚠️ Some code quality tools failed"
+
+  # Phase 4.3: Trunk CLI
+  echo "🌳 Phase 4.3: Setting up Trunk CLI..."
+  if ! command -v trunk >/dev/null 2>&1; then
+    echo "📥 Installing Trunk CLI..."
+    if curl -fsSL https://trunk.io/releases/latest/trunk | bash -s -- -b /usr/local/bin; then
+      echo "✅ Trunk CLI installed"
+      trunk --version || echo "⚠️ Trunk installation verification failed"
+    else
+      echo "⚠️ Trunk CLI installation failed"
+    fi
+  else
+    echo "✅ Trunk CLI already available"
+  fi
+
+  # Phase 4.4: Shell Enhancements (Sheldon)
+  echo "🐚 Phase 4.4: Setting up shell enhancements..."
+  if ! command -v sheldon >/dev/null 2>&1; then
+    if command -v cargo >/dev/null 2>&1; then
+      echo "📥 Installing Sheldon via Cargo..."
+      cargo install sheldon || echo "⚠️ Sheldon installation via cargo failed"
+    elif command -v brew >/dev/null 2>&1; then
+      echo "📥 Installing Sheldon via Homebrew..."
+      brew install sheldon || echo "⚠️ Sheldon installation via brew failed"
+    else
+      echo "⚠️ Sheldon installation skipped (no cargo/brew available)"
+    fi
+  else
+    echo "✅ Sheldon already available"
+  fi
+
+  # Setup shell configuration if sheldon is available
+  if command -v sheldon >/dev/null 2>&1; then
+    echo "🔧 Configuring shell enhancements..."
+    mkdir -p "$HOME/.config/sheldon"
+
+    # Create basic sheldon config (without template engine)
+    cat >"$HOME/.config/sheldon/plugins.toml" <<'SHELDON_EOF'
+# Sheldon Plugin Configuration for Mentat AI Assistant
+[plugins]
+
+[plugins.fzf]
+github = "junegunn/fzf"
+apply = ["defer"]
+
+[plugins.zsh-autosuggestions]
+github = "zsh-users/zsh-autosuggestions"
+apply = ["defer"]
+
+[plugins.zsh-syntax-highlighting]
+github = "zsh-users/zsh-syntax-highlighting"
+apply = ["defer"]
+
+# Mentat-specific enhancements
+[plugins.mentat-aliases]
+inline = '''
+# Mentat AI Assistant aliases
+alias mentat-setup="bash ~/.mentat/setup.sh"
+alias mentat-format="bash ~/.mentat/format.sh"
+alias mentat-doctor="~/.local/bin/mentat-doctor"
+
+# Development productivity
+alias ll="ls -la"
+alias gs="git status"
+alias ga="git add"
+alias gc="git commit"
+alias gp="git push"
+'''
+SHELDON_EOF
+    echo "✅ Shell configuration created"
+  fi
+
+  # Phase 4.5: Git Hooks (Lefthook)
+  echo "🪝 Phase 4.5: Setting up Git hooks..."
+  if [[ -f lefthook.yml ]] && command -v lefthook >/dev/null 2>&1; then
+    echo "📥 Installing lefthook hooks..."
+    lefthook install || echo "⚠️ Lefthook installation failed"
+  else
+    echo "ℹ️ Lefthook not available or not configured"
+  fi
+
+  # Phase 4.6: Git Performance Optimizations
+  echo "⚡ Phase 4.6: Applying Git performance optimizations..."
+  git config --global core.preloadindex true || true
+  git config --global core.fscache true || true
+  git config --global gc.auto 256 || true
+  git config --global submodule.fetchJobs 4 || true
+  git config --global fetch.parallel 4 || true
+  echo "✅ Git performance optimizations applied"
+
+  # Phase 4.7: Project-Specific Intelligence
+  echo "🧠 Phase 4.7: Applying project-specific optimizations..."
+
+  # Python project detection
+  if [[ -f pyproject.toml ]] || [[ -f setup.py ]]; then
+    echo "🐍 Python project detected - enabling enhanced Python tooling"
+    mise use python@latest 2>/dev/null || echo "ℹ️ Could not set Python version via mise"
+  fi
+
+  # Node.js project detection
+  if [[ -f package.json ]]; then
+    echo "📦 Node.js project detected - enabling enhanced Node tooling"
+    mise use node@lts 2>/dev/null || echo "ℹ️ Could not set Node version via mise"
+  fi
+
+  # Rust project detection
+  if [[ -f Cargo.toml ]]; then
+    echo "🦀 Rust project detected - enabling enhanced Rust tooling"
+    mise use rust@latest 2>/dev/null || echo "ℹ️ Could not set Rust version via mise"
+  fi
+
+  # Phase 4.8: Performance Enhancements
+  echo "🚀 Phase 4.8: Setting up performance enhancements..."
+
+  # Setup intelligent build caching
+  mkdir -p ~/.cache/{mise,trunk,mentat} || true
+
+  # Container-specific optimizations
+  if [[ -f /.dockerenv ]]; then
+    echo "🐳 Container optimizations enabled"
+    export PYTHONDONTWRITEBYTECODE=1
+    export PYTHONUNBUFFERED=1
+    echo 'export PYTHONDONTWRITEBYTECODE=1' >>~/.bashrc || true
+    echo 'export PYTHONUNBUFFERED=1' >>~/.bashrc || true
+  fi
+
+  echo "✅ Direct configuration completed successfully"
+}
+
+# ============================================================================
 # Main Orchestration with Proactive Intelligence
 # ============================================================================
 
@@ -387,17 +571,29 @@ main() {
 
   # Phase 4: Execute GitOps Configuration
   echo "🚀 Phase 4: GitOps Configuration Execution"
-  if command -v comtrya >/dev/null 2>&1; then
-    comtrya apply .comtrya/manifests/mentat-base.yaml
-    comtrya apply .comtrya/manifests/mentat-advanced.yaml
 
-    # Apply proactive enhancements if available
-    if [[ -f .comtrya/manifests/mentat-proactive.yaml ]]; then
-      comtrya apply .comtrya/manifests/mentat-proactive.yaml
+  # Try comtrya first, but with robust fallback
+  local comtrya_success=false
+
+  if command -v comtrya >/dev/null 2>&1; then
+    echo "🎯 Attempting Comtrya-based configuration..."
+
+    # Check if comtrya can apply manifests (newer versions use different syntax)
+    if comtrya apply --help >/dev/null 2>&1; then
+      # Try modern comtrya syntax
+      if comtrya apply --manifests .comtrya/manifests/ 2>/dev/null ||
+        comtrya apply -m .comtrya/manifests/ 2>/dev/null ||
+        (cd .comtrya && comtrya apply) 2>/dev/null; then
+        comtrya_success=true
+        echo "✅ Comtrya configuration applied successfully"
+      fi
     fi
-  else
-    echo "⚠️ Comtrya not available, falling back to direct execution"
-    # Fallback logic here if needed
+  fi
+
+  # Fallback to direct execution if comtrya fails
+  if [[ "$comtrya_success" == false ]]; then
+    echo "🔄 Comtrya failed or unavailable, executing configuration directly..."
+    execute_direct_configuration
   fi
 
   # Phase 5: Intelligent Glue & Integration
