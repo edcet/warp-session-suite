@@ -4,9 +4,9 @@
 
 echo "📦 Installing project dependencies..."
 
-# Install the Python project in development mode
-if ! pip3 install -e .; then
-    echo "❌ Error: Failed to install project in development mode"
+# Install Python dependencies from pyproject.toml
+if ! pip3 install typer[all] duckdb rich; then
+    echo "❌ Error: Failed to install project dependencies"
     exit 1
 fi
 

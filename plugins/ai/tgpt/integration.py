@@ -8,7 +8,7 @@ import json
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 # Add core plugin path
 sys.path.append(str(Path(__file__).parent.parent.parent))
@@ -49,7 +49,9 @@ class TGPTPlugin(BasePlugin):
             "plugin_version": self.version,
             "capabilities": self.capabilities,
             "tgpt_available": self.initialize(),
-            "session_timestamp": subprocess.check_output(["date", "-Iseconds"]).decode().strip(),
+            "session_timestamp": subprocess.check_output(["date", "-Iseconds"])
+            .decode()
+            .strip(),
         }
 
     def generate_code(self, prompt: str, language: str = "python") -> str:
@@ -57,7 +59,10 @@ class TGPTPlugin(BasePlugin):
         try:
             full_prompt = f"Generate {language} code for: {prompt}"
             result = subprocess.run(
-                ["tgpt", "--code", full_prompt], capture_output=True, text=True, timeout=30
+                ["tgpt", "--code", full_prompt],
+                capture_output=True,
+                text=True,
+                timeout=30,
             )
 
             if result.returncode == 0:
@@ -72,7 +77,10 @@ class TGPTPlugin(BasePlugin):
         try:
             prompt = f"Analyze this code focusing on {focus}:\n\n{code}"
             result = subprocess.run(
-                ["tgpt", "--markdown", prompt], capture_output=True, text=True, timeout=30
+                ["tgpt", "--markdown", prompt],
+                capture_output=True,
+                text=True,
+                timeout=30,
             )
 
             if result.returncode == 0:
@@ -85,7 +93,9 @@ class TGPTPlugin(BasePlugin):
     def chat(self, message: str) -> str:
         """Interactive chat with TGPT."""
         try:
-            result = subprocess.run(["tgpt", message], capture_output=True, text=True, timeout=30)
+            result = subprocess.run(
+                ["tgpt", message], capture_output=True, text=True, timeout=30
+            )
 
             if result.returncode == 0:
                 return result.stdout.strip()
@@ -139,10 +149,14 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="TGPT AI Plugin CLI")
     parser.add_argument(
-        "command", choices=["test", "generate", "analyze", "chat"], help="Command to execute"
+        "command",
+        choices=["test", "generate", "analyze", "chat"],
+        help="Command to execute",
     )
     parser.add_argument("--prompt", type=str, help="Prompt for generation or chat")
-    parser.add_argument("--language", type=str, default="python", help="Programming language")
+    parser.add_argument(
+        "--language", type=str, default="python", help="Programming language"
+    )
     parser.add_argument("--code", type=str, help="Code to analyze")
 
     args = parser.parse_args()

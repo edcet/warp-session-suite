@@ -12,7 +12,6 @@ session database.
 
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 from typing import Optional
 
@@ -52,7 +51,9 @@ def preview(
     name: str = typer.Argument(..., help="Name of SQL snippet"),
     limit: int = typer.Option(20, help="Limit rows for preview"),
     db: Optional[str] = typer.Option(None, "--db", help="Path to Warp SQLite"),
-    format: str = typer.Option("table", "--format", "-f", help="Output format: table|json"),
+    format: str = typer.Option(
+        "table", "--format", "-f", help="Output format: table|json"
+    ),
 ) -> None:
     """Preview results of a SQL snippet with row limit.
 
@@ -75,7 +76,8 @@ def preview(
         for row in df.to_dict(orient="records"):
             # Ensure all values are JSON serialisable (e.g. pandas Timestamp -> str)
             serialised = {
-                k: (v.isoformat() if hasattr(v, "isoformat") else v) for k, v in row.items()
+                k: (v.isoformat() if hasattr(v, "isoformat") else v)
+                for k, v in row.items()
             }
             print(json.dumps(serialised, default=str))
     else:
@@ -88,8 +90,12 @@ def preview(
 def run(
     name: str = typer.Argument(..., help="SQL snippet name"),
     db: Optional[str] = typer.Option(None, "--db", help="Path to Warp SQLite"),
-    output: Optional[Path] = typer.Option(None, "--output", "-o", help="Write results to CSV"),
-    format: str = typer.Option("table", "--format", "-f", help="Output format: table|json"),
+    output: Optional[Path] = typer.Option(
+        None, "--output", "-o", help="Write results to CSV"
+    ),
+    format: str = typer.Option(
+        "table", "--format", "-f", help="Output format: table|json"
+    ),
 ) -> None:
     """Run a SQL snippet and optionally save to CSV or emit JSON lines."""
 
@@ -111,7 +117,8 @@ def run(
 
             for row in df.to_dict(orient="records"):
                 serialised = {
-                    k: (v.isoformat() if hasattr(v, "isoformat") else v) for k, v in row.items()
+                    k: (v.isoformat() if hasattr(v, "isoformat") else v)
+                    for k, v in row.items()
                 }
                 print(json.dumps(serialised, default=str))
         else:
