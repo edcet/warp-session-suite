@@ -12,13 +12,13 @@ else
     # Format Python code with Black (auto-fix)
     if command -v black >/dev/null 2>&1; then
         echo "🐍 Formatting Python code with Black..."
-        find . -name "*.py" -not -path "./.git/*" -not -path "./venv/*" -not -path "./.venv/*" -not -path "./.trunk/*" | xargs black --line-length 100 --quiet
+        find . -name "*.py" -not -path "./.git/*" -not -path "./venv/*" -not -path "./.venv/*" -not -path "./.trunk/*" -print0 | xargs -0 black --line-length 100 --quiet
     fi
     
     # Sort Python imports with isort (auto-fix)
     if command -v isort >/dev/null 2>&1; then
         echo "📦 Sorting imports with isort..."
-        find . -name "*.py" -not -path "./.git/*" -not -path "./venv/*" -not -path "./.venv/*" -not -path "./.trunk/*" | xargs isort --profile black --quiet
+        find . -name "*.py" -not -path "./.git/*" -not -path "./venv/*" -not -path "./.venv/*" -not -path "./.trunk/*" -print0 | xargs -0 isort --profile black --quiet
     fi
     
     # Fix Python issues with ruff (auto-fix only)
@@ -37,7 +37,7 @@ else
     # Format shell scripts with shfmt (auto-fix)
     if command -v shfmt >/dev/null 2>&1; then
         echo "🐚 Formatting shell scripts..."
-        find . -name "*.sh" -not -path "./.git/*" -not -path "./.trunk/*" -exec shfmt -w -i 2 {} \; 2>/dev/null || true
+        find . -name "*.sh" -not -path "./.git/*" -not -path "./.trunk/*" -print0 | xargs -0 shfmt -w -i 2 2>/dev/null || true
     fi
 fi
 
