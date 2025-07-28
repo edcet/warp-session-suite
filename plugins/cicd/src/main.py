@@ -12,7 +12,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-import yaml
+try:
+    import yaml
+except ImportError:
+    yaml = None
 
 # Add core plugin path
 sys.path.append(str(Path(__file__).parent.parent.parent))
@@ -48,6 +51,9 @@ class CICDPlugin(BasePlugin):
 
     def initialize(self) -> bool:
         """Initialize CI/CD plugin."""
+        if yaml is None:
+            print("⚠️  PyYAML not available - CI/CD configurations will be limited")
+            return False
         self._detect_ci_platforms()
         self._ensure_ci_configurations()
         return True

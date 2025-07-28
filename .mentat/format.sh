@@ -6,8 +6,8 @@ echo "🎨 Running automatic code formatting and quality checks..."
 
 # Install required dependencies if not available
 if ! python3 -c "import black" 2>/dev/null; then
-    echo "📦 Installing Black formatter..."
-    pip3 install --user black isort ruff
+    echo "📦 Installing Python dependencies..."
+    pip3 install --user black isort ruff PyYAML
 fi
 
 # Format Python code with Black
