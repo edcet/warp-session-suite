@@ -40,4 +40,11 @@ fi
 echo "🧹 Cleaning up cache files..."
 rm -rf .trunk/actions .trunk/logs .trunk/notifications .trunk/out .trunk/plugins .trunk/tools 2>/dev/null || true
 
+# Fix TOML files by replacing Unicode emojis with ASCII equivalents for CI compatibility
+echo "🔧 Fixing TOML Unicode characters for CI compatibility..."
+if [ -f ".mise.toml" ]; then
+    # Replace common emoji characters with ASCII equivalents
+    sed -i 's/✅/[OK]/g; s/❌/[ERROR]/g; s/⚠️/[WARNING]/g; s/📦/[PACKAGE]/g; s/🔄/[PROCESSING]/g; s/📄/[FILE]/g; s/📊/[DATA]/g; s/📝/[DOCUMENT]/g; s/📁/[FOLDER]/g; s/💡/[TIP]/g; s/🐍/[PYTHON]/g; s/🔍/[SEARCH]/g; s/ℹ️/[INFO]/g; s/📀/[DISK]/g' .mise.toml
+fi
+
 echo "✅ Formatting and quality checks completed!"
