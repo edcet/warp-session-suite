@@ -142,6 +142,9 @@ dmypy.json
 *_results_*.json
 *_backup_*.json
 
+# Remove duplicate mise config files  
+mise.toml
+
 # IDE and editor files
 .vscode/
 .idea/

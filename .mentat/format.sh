@@ -47,4 +47,10 @@ if [ -f ".mise.toml" ]; then
     sed -i 's/✅/[OK]/g; s/❌/[ERROR]/g; s/⚠️/[WARNING]/g; s/📦/[PACKAGE]/g; s/🔄/[PROCESSING]/g; s/📄/[FILE]/g; s/📊/[DATA]/g; s/📝/[DOCUMENT]/g; s/📁/[FOLDER]/g; s/💡/[TIP]/g; s/🐍/[PYTHON]/g; s/🔍/[SEARCH]/g; s/ℹ️/[INFO]/g; s/📀/[DISK]/g' .mise.toml
 fi
 
+# Remove duplicate or malformed mise configuration files
+if [ -f "mise.toml" ]; then
+    echo "🗑️ Removing duplicate/malformed mise.toml file..."
+    rm -f mise.toml
+fi
+
 echo "✅ Formatting and quality checks completed!"
